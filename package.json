@@ -1,15 +1,14 @@
 {
-  "name": "@spookyswap/core",
-  "description": "🎛 Core contracts for the spookyswap protocol",
+  "name": "@ultronswap/core",
+  "description": "🎛 Core contracts for the ultronswap protocol",
   "version": "1.1.0",
-  "homepage": "https://spookyswap.finance",
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SpookySwap/spookyswap-core"
+    "url": "https://github.com/UltronFondationDev/swap-core"
   },
   "keywords": [
-    "spookyswap",
+    "ultronswap",
     "ethereum",
     "ftm",
     "core",

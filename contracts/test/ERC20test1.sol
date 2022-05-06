@@ -3,11 +3,11 @@ pragma solidity =0.6.12;
 
 import '../libraries/SafeMath.sol';
 
-contract ERC20test1 {
+contract ERC20test {
     using SafeMath for uint;
 
-    string public constant name = "catTest";
-    string public constant symbol = "cT";
+    string public name;
+    string public symbol;
     uint8 public constant decimals = 18;
     uint  public totalSupply;
     mapping(address => uint) public balanceOf;
@@ -21,7 +21,9 @@ contract ERC20test1 {
     event Approval(address indexed owner, address indexed spender, uint value);
     event Transfer(address indexed from, address indexed to, uint value);
 
-    constructor(uint _totalSupply) public {
+    constructor(uint _totalSupply, string memory _name, string memory _symbol) public {
+        name = _name;
+        symbol = _symbol;
         uint chainId;
         assembly {
             chainId := chainid()
