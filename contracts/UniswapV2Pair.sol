@@ -20,13 +20,16 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     address public token0;
     address public token1;
 
-    uint112 private reserve0;           // uses single storage slot, accessible via getReserves
-    uint112 private reserve1;           // uses single storage slot, accessible via getReserves
-    uint32  private blockTimestampLast; // uses single storage slot, accessible via getReserves
+    address public immutable WETHAddress; /// @dev address for checking is token0 || token1 == wETH
+    address public treasuryAddress; /// @dev address for sending fee
+
+    uint112 private reserve0;           /// @dev uses single storage slot, accessible via getReserves
+    uint112 private reserve1;           /// @dev uses single storage slot, accessible via getReserves
+    uint32  private blockTimestampLast; /// @dev uses single storage slot, accessible via getReserves
 
     uint public price0CumulativeLast;
     uint public price1CumulativeLast;
-    uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
+    uint public kLast; /// @dev reserve0 * reserve1, as of immediately after the most recent liquidity event
 
     uint private unlocked = 1;
     modifier lock() {
@@ -58,10 +61,12 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         address indexed to
     );
     event Sync(uint112 reserve0, uint112 reserve1);
-
-    constructor() public {
+    
+    constructor(address _WETHAddress, address _treasuryAddress) public {
         factory = msg.sender;
-    }
+        WETHAddress = _WETHAddress;
+        treasuryAddress = _treasuryAddress;
+    } 
 
     // called once by the factory at time of deployment
     function initialize(address _token0, address _token1) external {
@@ -181,6 +186,22 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
         require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UniswapV2: K');
+        
+        address _token0 = token0;
+        address _token1 = token1;
+        address _to = to;
+
+        uint fee0 = balance0.mul(1000).sub(amount0In.mul(999));
+        uint fee1 = balance1.mul(1000).sub(amount0In.mul(999));
+        
+        //address wethAddress = router.WETH();
+        if(_token0 == WETHAddress || _token1 == WETHAddress) {
+            _safeTransfer(_token0, treasuryAddress, fee0);
+            _safeTransfer(_token1, treasuryAddress, fee1);
+        }
+        else {
+            this.swap(fee0, fee1, _to, new bytes(0));
+        }
         }
 
         _update(balance0, balance1, _reserve0, _reserve1);
