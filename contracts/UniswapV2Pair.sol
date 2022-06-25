@@ -63,7 +63,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     );
     event Sync(uint112 reserve0, uint112 reserve1);
     
-    constructor() public {
+    constructor(address _router, address _treasuryAddress) public {
         factory = msg.sender;
         router = IUniswapV2Router02(_router);
         treasuryAddress = _treasuryAddress;
