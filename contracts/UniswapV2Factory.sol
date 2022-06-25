@@ -13,10 +13,14 @@ contract UniswapV2Factory is IUniswapV2Factory {
     mapping(address => mapping(address => address)) public override getPair;
     address[] public override allPairs;
 
+    address public routerAddress; /// @dev UniswapV2Router02 address
+    address public treasuryAddress; /// @dev address for sending fee
+
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
-    constructor(address _feeToSetter) public {
+    constructor(address _feeToSetter, address _treasuryAddress) public {
         feeToSetter = _feeToSetter;
+        treasuryAddress = _treasuryAddress;
     }
 
     function allPairsLength() external override view returns (uint) {
@@ -37,7 +41,7 @@ contract UniswapV2Factory is IUniswapV2Factory {
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        UniswapV2Pair(pair).initialize(token0, token1);
+        UniswapV2Pair(pair).initialize(token0, token1, treasuryAddress, routerAddress);
         getPair[token0][token1] = pair;
         getPair[token1][token0] = pair; // populate mapping in the reverse direction
         allPairs.push(pair);
@@ -52,6 +56,18 @@ contract UniswapV2Factory is IUniswapV2Factory {
     function setFeeToSetter(address _feeToSetter) external override {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         feeToSetter = _feeToSetter;
+    }
+
+    function setTreasuryAddress(address _treasuryAddress) external override {
+        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+        require(_treasuryAddress != address(0), "zero address");
+        treasuryAddress = _treasuryAddress;
+    }
+
+    function setRouterAddress(address _routerAddress) external override {
+        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+        require(_routerAddress != address(0), "zero address");
+        routerAddress = _routerAddress;
     }
 
 }

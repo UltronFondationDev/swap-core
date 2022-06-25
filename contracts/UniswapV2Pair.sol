@@ -21,7 +21,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     address public token0;
     address public token1;
 
-    IUniswapV2Router02 public immutable router; /// @dev UniswapV2Router02
+    IUniswapV2Router02 public router; /// @dev UniswapV2Router02
     address public treasuryAddress; /// @dev address for sending fee
 
     uint112 private reserve0;           /// @dev uses single storage slot, accessible via getReserves
@@ -63,17 +63,17 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     );
     event Sync(uint112 reserve0, uint112 reserve1);
     
-    constructor(address _router, address _treasuryAddress) public {
-        factory = msg.sender;
-        router = IUniswapV2Router02(_router);
-        treasuryAddress = _treasuryAddress;
+    constructor() public {
+        factory = msg.sender;  
     } 
 
     // called once by the factory at time of deployment
-    function initialize(address _token0, address _token1) external {
+    function initialize(address _token0, address _token1, address _treasuryAddress, address _router) external {
         require(msg.sender == factory, 'UniswapV2: FORBIDDEN'); // sufficient check
         token0 = _token0;
         token1 = _token1;
+        treasuryAddress = _treasuryAddress;
+        router = IUniswapV2Router02(_router);
     }
 
     // update reserves and, on the first call per block, price accumulators
