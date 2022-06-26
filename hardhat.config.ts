@@ -89,7 +89,7 @@ const config: HardhatUserConfig = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      url: `${process.env.API_URL}`,
       chainId: 5,
       gas: 2100000,
       gasPrice: 8000000000,
