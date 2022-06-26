@@ -13,8 +13,8 @@ contract UniswapV2Factory is IUniswapV2Factory {
     mapping(address => mapping(address => address)) public override getPair;
     address[] public override allPairs;
 
-    address public routerAddress; /// @dev UniswapV2Router02 address
-    address public treasuryAddress; /// @dev address for sending fee
+    address public override routerAddress; /// @dev UniswapV2Router02 address
+    address public override treasuryAddress; /// @dev address for sending fee
 
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
