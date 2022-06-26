@@ -6,13 +6,13 @@ task("deploy", "Deploy")
       const uniswapV2Factory = await run("UniswapV2Factory");
 
       const weth = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; // goerli
-      const uniswapV2Router = await run("UniswapV2Router", { factory: uniswapV2Factory, weth: weth });
+      const uniswapV2Router = await run("router", { factory: uniswapV2Factory, weth: weth });
 
-      const setRouterInitial = await run("UniswapV2Router", { factory: uniswapV2Factory, router: uniswapV2Router });
+      const setRouterInitial = await run("set-router", { factory: uniswapV2Factory, router: uniswapV2Router });
 
       console.log("=".repeat(50));
       Helpers.logDeploy('UniswapV2Factory',uniswapV2Factory);
-      Helpers.logDeploy('UniswapV2Router', uniswapV2Router);
+      Helpers.logDeploy('UniswapV2Router02', uniswapV2Router);
       Helpers.logDeploy('SetRouterInitial', setRouterInitial);
   });
 
@@ -29,21 +29,21 @@ subtask("UniswapV2Factory", "The contract UniswapV2Factory is deployed")
             return UniswapV2Factory.address;
       });
 
-/*========== UniswapV2Router ==========*/
-subtask("UniswapV2Router", "The contract UniswapV2Router is deployed")
+/*========== UniswapV2Router02 ==========*/
+subtask("router", "The contract UniswapV2Router02 is deployed")
       .addParam("factory", "UniswapV2Factory address", "", types.string)
       .addParam("weth", "wETH address", "", types.string)
       .setAction(async (taskArgs, { ethers, network }) => {
             const signer = (await ethers.getSigners())[0];
 
-            const UniswapV2RouterFactory = await ethers.getContractFactory("UniswapV2Router", signer);
+            const UniswapV2RouterFactory = await ethers.getContractFactory("UniswapV2Router02", signer);
             const UniswapV2Router = await (await UniswapV2RouterFactory.deploy(taskArgs.factory, taskArgs.weth)).deployed();
-            console.log(`The UniswapV2Router: \u001b[1;34m${UniswapV2Router.address}\u001b[0m`);    
+            console.log(`The UniswapV2Router02: \u001b[1;34m${UniswapV2Router.address}\u001b[0m`);    
             return UniswapV2Router.address;
       });
 
-/*========== UniswapV2Factory ==========*/
-subtask("SetRouterInitial", "Setting UniswapV2Router Address in UniswapV2Factory after deploying UniswapV2Router")
+/*========== set-router ==========*/
+subtask("set-router", "Setting UniswapV2Router Address in UniswapV2Factory after deploying UniswapV2Router")
       .addParam("factory", "UniswapV2Factory address", "", types.string)      
       .addParam("router", "UniswapV2Router address", "", types.string)
       .setAction(async (taskArgs, { ethers, network }) => {
