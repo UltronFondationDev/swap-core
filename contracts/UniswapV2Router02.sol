@@ -2,7 +2,6 @@
 pragma solidity =0.6.12;
 
 import './interfaces/IUniswapV2Router02.sol';
-import './interfaces/IUniswapV2Factory.sol';
 import './libraries/UniswapV2Library.sol';
 import './libraries/TransferHelper.sol';
 import './libraries/SafeMath.sol';
