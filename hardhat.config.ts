@@ -44,7 +44,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 1337,
       forking: {
-        url: "https://main-light.eth.linkpool.io",
+        url: "https://eth-mainnet.alchemyapi.io/v2/i2LgfhBeI-JidguSNlFuToo7kPSkFBPb",
         blockNumber: 11095000,
       },
       gas: 2100000,
@@ -56,7 +56,7 @@ const config: HardhatUserConfig = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     ethereum: {
-      url: "https://main-light.eth.linkpool.io/",
+      url: "https://eth-mainnet.alchemyapi.io/v2/i2LgfhBeI-JidguSNlFuToo7kPSkFBPb",
       chainId: 1,
       gasPrice: 30000000000,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
