@@ -204,8 +204,11 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         console.log("balance0", balance0);
         console.log("balance1", balance1);
 
-        uint fee0 = balance0.mul(1000).sub(amount0In.mul(999));
-        uint fee1 = balance1.mul(1000).sub(amount1In.mul(999));
+        uint fee0 = amount0In.mul(10) / 1000;
+        uint fee1 = amount1In.mul(10) / 1000;
+
+        console.log("balance0", balance0);
+        console.log("balance1", balance1);
 
         console.log("fee0", fee0);
         console.log("fee1", fee1);
