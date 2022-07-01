@@ -9,7 +9,6 @@ import './interfaces/IERC20.sol';
 import './interfaces/IUniswapV2Factory.sol';
 import './interfaces/IUniswapV2Callee.sol';
 import './interfaces/IUniswapV2Router02.sol';
-import 'hardhat/console.sol';
 
 contract UniswapV2Pair is UniswapV2ERC20 {
     using SafeMath  for uint;
@@ -185,52 +184,49 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-        console.log("balance0", balance0);
-        console.log("balance1", balance1);
-
-        console.log("amount0In", amount0In);
-        console.log("amount1In", amount1In);
 
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(2));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(2));
-
-        console.log("balance0Adjusted", balance0Adjusted);
-        console.log("balance1Adjusted", balance1Adjusted);
         require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UniswapV2: K');
         
         address _token0 = token0;
         address _token1 = token1;
 
-        console.log("balance0", balance0);
-        console.log("balance1", balance1);
-
-        uint fee0 = amount0In.mul(10) / 1000;
-        uint fee1 = amount1In.mul(10) / 1000;
-
-        console.log("balance0", balance0);
-        console.log("balance1", balance1);
-
-        console.log("fee0", fee0);
-        console.log("fee1", fee1);
+        uint fee0 = amount0In.mul(10) / 10000;
+        uint fee1 = amount1In.mul(10) / 10000;
         
         address wethAddress = router.WETH();
-        if(_token0 == wethAddress || _token1 == wethAddress) {
-            _safeTransfer(_token0, treasuryAddress, fee0);
-            _safeTransfer(_token1, treasuryAddress, fee1);
+        if(IUniswapV2Factory(factory).getPair(_token0, wethAddress) == address(0) 
+            || IUniswapV2Factory(factory).getPair(_token1, wethAddress) == address(0) 
+            || _token0 == wethAddress || _token1 == wethAddress) {
+            if(fee0 > 0) {
+                _safeTransfer(_token0, treasuryAddress, fee0);
+            }
+            if(fee1 > 0) {
+                _safeTransfer(_token1, treasuryAddress, fee1);
+            }
         }
         else {
-            address[] memory path0 = new address[](2);
-            address[] memory path1 = new address[](2);
-            path0[0] = _token0;
-            path0[1] = wethAddress; 
-            path1[0] = _token1;
-            path1[1] = wethAddress;
-            uint[] memory amountsOut0 = router.getAmountsOut(fee0, path0);
-            uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);
-            uint amountOutMin0 = amountsOut0[amountsOut0.length - 1].sub(amountsOut0[amountsOut0.length - 1].mul(10) / 100);
-            uint amountOutMin1 = amountsOut1[amountsOut1.length - 1].sub(amountsOut1[amountsOut1.length - 1].mul(10) / 100);
-            router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
-            router.swapExactTokensForETH(fee1, amountOutMin1, path1, treasuryAddress, block.timestamp.add(30));
+            if(fee0 > 0) {
+                address[] memory path0 = new address[](2);
+                path0[0] = _token0;
+                path0[1] = wethAddress; 
+                uint[] memory amountsOut0 = router.getAmountsOut(fee0, path0);
+                uint amountOutMin0 = amountsOut0[amountsOut0.length - 1].sub(amountsOut0[amountsOut0.length - 1].mul(10) / 100);
+                
+                IERC20(_token0).approve(address(router), fee0);
+                router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
+            }
+            if(fee1 > 0) {
+                address[] memory path1 = ;
+                path1[0] = _token1;
+                path1[1] = wethAddress;
+                uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);
+                uint amountOutMin1 = amountsOut1[amountsOut1.length - 1].sub(amountsOut1[amountsOut1.length - 1].mul(10) / 100);
+
+                IERC20(_token1).approve(address(router), fee1);
+                router.swapExactTokensForETH(fee1, amountOutMin1, path1, treasuryAddress, block.timestamp.add(30));
+            }
         }
         }
 
