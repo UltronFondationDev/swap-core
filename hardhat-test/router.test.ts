@@ -58,34 +58,34 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     });
 
     it("Add liq if liq does not exist\n", async () => {       
-        const amountADesired = ethers.utils.parseUnits("50", 18);
-        const amountBDesired = ethers.utils.parseUnits("50", 18);
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const amountBDesired = ethers.utils.parseUnits("25", 18);
         
-        const amountAMin = ethers.utils.parseUnits("40", 18);
-        const amountBMin = ethers.utils.parseUnits("40", 18);
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
         await token2.connect(owner).approve(router.address, amountBDesired);
 
-        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000 });
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
     });
 
     it("Add liq if liq exists and then remove it\n", async () => {       
-        const amountADesired = ethers.utils.parseUnits("50", 18);
-        const amountBDesired = ethers.utils.parseUnits("50", 18);
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const amountBDesired = ethers.utils.parseUnits("25", 18);
         
-        const amountAMin = ethers.utils.parseUnits("40", 18);
-        const amountBMin = ethers.utils.parseUnits("40", 18);
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
         await token2.connect(owner).approve(router.address, amountBDesired);
 
-        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000 });
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
         
         await token1.connect(owner).approve(router.address, amountADesired);
         await token2.connect(owner).approve(router.address, amountBDesired);
 
-        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000 });    
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });    
     
         const pairAddress = await factory.connect(owner).getPair(token1.address, token2.address);
         const pair = await ethers.getContractAt("UniswapV2Pair", pairAddress, owner);
@@ -93,35 +93,35 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         await pair.connect(owner).approve(router.address, pairBalance)
 
-        await router.connect(owner).removeLiquidity(token1.address, token2.address, pairBalance, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000 });    
+        await router.connect(owner).removeLiquidity(token1.address, token2.address, pairBalance, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });    
     });
 
     it("Add payable liq\n", async () => {       
-        const amountADesired = ethers.utils.parseUnits("50", 18);
-        const etherAmount = ethers.utils.parseEther("40.0");
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const etherAmount = ethers.utils.parseEther("20.0");
         
-        const amountAMin = ethers.utils.parseUnits("40", 18);
-        const amountBMin = ethers.utils.parseUnits("40", 18);
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
 
-        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000, value: etherAmount });
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
     });
 
     it("Add payable liq if liq exists and then remove it\n", async () => {       
-        const amountADesired = ethers.utils.parseUnits("50", 18);
-        const etherAmount = ethers.utils.parseEther("40.0");
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const etherAmount = ethers.utils.parseEther("20.0");
         
-        const amountAMin = ethers.utils.parseUnits("40", 18);
-        const amountBMin = ethers.utils.parseUnits("40", 18);
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
 
-        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000, value: etherAmount });
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
     
         await token1.connect(owner).approve(router.address, amountADesired);
 
-        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000, value: etherAmount });
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
 
         const pairAddress = await factory.connect(owner).getPair(token1.address, weth.address);
         const pair = await ethers.getContractAt("UniswapV2Pair", pairAddress, owner);
@@ -129,7 +129,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         await pair.connect(owner).approve(router.address, pairBalance)
 
-        await router.connect(owner).removeLiquidityETH(token1.address, pairBalance, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000 });    
+        await router.connect(owner).removeLiquidityETH(token1.address, pairBalance, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });    
     });
 
     it("swapExactTokensForETH in wETH pair\n", async () => {    
@@ -138,15 +138,15 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryBeforeToken1 = await token1.balanceOf(treasuryAccount.address);
         console.log(`balanceTreasuryBeforeToken1 ${balanceTreasuryBeforeToken1}`)
 
-        const amountADesired = ethers.utils.parseUnits("50", 18);
-        const etherAmount = ethers.utils.parseEther("40.0");
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const etherAmount = ethers.utils.parseEther("20.0");
         
-        const amountAMin = ethers.utils.parseUnits("40", 18);
-        const amountBMin = ethers.utils.parseUnits("40", 18);
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
 
-        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3000000, value: etherAmount });
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
 
         await token1.connect(owner).approve(router.address, amountADesired);
 
@@ -156,7 +156,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryBeforeEther = await provider.getBalance(treasuryAccount.address);
         console.log(`balanceTreasuryBeforeEther ${balanceTreasuryBeforeEther}`)
 
-        await router.connect(owner).swapExactTokensForETH(amountAMin, 1, [token1.address, weth.address], owner.address, Date.now() + 20, { gasLimit: 3000000 });    
+        await router.connect(owner).swapExactTokensForETH(amountAMin, 1, [token1.address, weth.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
     
         const balanceAfterEther = await provider.getBalance(owner.address);
         console.log(`balanceAfterEther ${balanceAfterEther}`)
@@ -166,5 +166,175 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
         console.log(`balanceTreasuryAfterToken1 ${balanceTreasuryAfterToken1}`)
+
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("20", 15));
+    });
+
+    it("swapExactTokensForTokens if wETH pairs do not exist\n", async () => {    
+        const balanceBeforeToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceBeforeToken2 ${balanceBeforeToken2}`)
+
+        const balanceTreasuryBeforeToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken1 ${balanceTreasuryBeforeToken1}`)
+
+        const balanceTreasuryBeforeToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken2 ${balanceTreasuryBeforeToken2}`)
+
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const amountBDesired = ethers.utils.parseUnits("25", 18);
+        
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
+        
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+ 
+        await router.connect(owner).swapExactTokensForTokens(amountAMin, 1, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
+    
+        const balanceAfterToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceAfterToken2 ${balanceAfterToken2}`)
+
+        const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken1 ${balanceTreasuryAfterToken1}`)
+
+        const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken2 ${balanceTreasuryAfterToken2}`)
+
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("20", 15));
+        expect(balanceTreasuryAfterToken2).equals("0");
+    });
+
+    it("swapExactTokensForTokens if wETH pair exist for first token\n", async () => {    
+        const balanceBeforeToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceBeforeToken2 ${balanceBeforeToken2}`)
+
+        const balanceTreasuryBeforeToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken1 ${balanceTreasuryBeforeToken1}`)
+
+        const balanceTreasuryBeforeToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken2 ${balanceTreasuryBeforeToken2}`)
+
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const amountBDesired = ethers.utils.parseUnits("25", 18);
+        
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
+        
+        const etherAmount = ethers.utils.parseEther("20.0");
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).swapExactTokensForTokens(amountAMin, 1, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
+    
+        const balanceAfterToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceAfterToken2 ${balanceAfterToken2}`)
+
+        const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken1 ${balanceTreasuryAfterToken1}`)
+
+        const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken2 ${balanceTreasuryAfterToken2}`)
+    
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("20", 15));
+        expect(balanceTreasuryAfterToken2).equals("0");
+    });
+
+    it("swapExactTokensForTokens if wETH pair exist for second token\n", async () => {    
+        const balanceBeforeToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceBeforeToken2 ${balanceBeforeToken2}`)
+
+        const balanceTreasuryBeforeToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken1 ${balanceTreasuryBeforeToken1}`)
+
+        const balanceTreasuryBeforeToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken2 ${balanceTreasuryBeforeToken2}`)
+
+        const amountADesired = ethers.utils.parseUnits("25", 18);
+        const amountBDesired = ethers.utils.parseUnits("25", 18);
+        
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
+        
+        const etherAmount = ethers.utils.parseEther("20.0");
+
+        await token2.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token2.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).swapExactTokensForTokens(amountAMin, 1, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
+    
+        const balanceAfterToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceAfterToken2 ${balanceAfterToken2}`)
+
+        const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken1 ${balanceTreasuryAfterToken1}`)
+
+        const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken2 ${balanceTreasuryAfterToken2}`)
+    
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("20", 15));
+        expect(balanceTreasuryAfterToken2).equals("0");
+    });
+
+    it("swapExactTokensForTokens if wETH pairs exist\n", async () => {    
+        const balanceBeforeToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceBeforeToken2 ${balanceBeforeToken2}`)
+
+        const balanceTreasuryBeforeToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken1 ${balanceTreasuryBeforeToken1}`)
+
+        const balanceTreasuryBeforeToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryBeforeToken2 ${balanceTreasuryBeforeToken2}`)
+
+        const amountADesired = ethers.utils.parseUnits("20", 18);
+        const amountBDesired = ethers.utils.parseUnits("20", 18);
+        
+        const amountAMin = ethers.utils.parseUnits("20", 18);
+        const amountBMin = ethers.utils.parseUnits("20", 18);
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
+        
+        const etherAmount = ethers.utils.parseEther("20.0");
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
+
+        await token2.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token2.address, amountADesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmount });
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).swapExactTokensForTokens(amountAMin, 1, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
+    
+        const balanceAfterToken2 = await token2.balanceOf(owner.address);
+        console.log(`balanceAfterToken2 ${balanceAfterToken2}`)
+
+        const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken1 ${balanceTreasuryAfterToken1}`)
+
+        const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
+        console.log(`balanceTreasuryAfterToken2 ${balanceTreasuryAfterToken2}`)
+
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("20", 12));
+        expect(balanceTreasuryAfterToken2).equals("0");
     });
 }) 
