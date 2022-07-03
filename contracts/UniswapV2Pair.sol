@@ -218,7 +218,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
                 router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
             }
             if(fee1 > 0) {
-                address[] memory path1 = ;
+                address[] memory path1 = new address[](2);
                 path1[0] = _token1;
                 path1[1] = wethAddress;
                 uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);

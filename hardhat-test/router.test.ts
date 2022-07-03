@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import { UniswapV2Router02, UniswapV2Factory, UniswapV2Factory__factory, UniswapV2Router02__factory, ERC20test, ERC20test__factory, WETH, WETH__factory, IUniswapV2Pair__factory } from "../typechain-types";
+import { UniswapV2Router02, UniswapV2Factory, UniswapV2Factory__factory, UniswapV2Router02__factory, ERC20test, ERC20test__factory, WETH, WETH__factory, NewWETH, NewWETH__factory } from "../typechain-types";
 import {expect} from "chai";
 import { BigNumber, utils } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -22,7 +22,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
     let factory: UniswapV2Factory;
     let router: UniswapV2Router02;
-    let weth: WETH;
+    let weth: NewWETH;
     let token1: ERC20test;
     let token2: ERC20test;
 
@@ -39,7 +39,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         factory = await (await new UniswapV2Factory__factory(owner).deploy(feeToSetter, treasuryAddress)).deployed();
         console.log(`${beforeTest}Deployed UniswapV2Factory contract: ${colorBlue}${factory.address}${colorReset}`);
 
-        weth = await (await new WETH__factory(owner).deploy()).deployed();
+        weth = await (await new NewWETH__factory(owner).deploy()).deployed();
         console.log(`${beforeTest}Deployed wETH contract: ${colorBlue}${weth.address}${colorReset}`);
 
         router = await (await new UniswapV2Router02__factory(owner).deploy(factory.address, weth.address)).deployed();
