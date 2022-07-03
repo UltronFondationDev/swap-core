@@ -226,6 +226,7 @@ contract newWETH {
     }
 
     function burn(address account, uint256 amount) external {
+        require(containsMinter(msg.sender), "not burner");
         _burn(account, amount);
     }
 
@@ -236,10 +237,6 @@ contract newWETH {
         require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
         _balances[account] = accountBalance - amount;
         _totalSupply -= amount;
-
-        if(!containsMinter(msg.sender)) {
-            msg.sender.transfer(amount);
-        }
 
         emit Transfer(account, address(0), amount);
     }

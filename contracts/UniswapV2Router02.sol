@@ -29,9 +29,9 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         require(msg.sender == WETH); // only accept ETH via fallback from the WETH contract
     }
 
-    function _burnETHFromPair(address token0, address token1, uint256 amount) private {
-        InewWETH(WETH).burn(IUniswapV2Factory(factory).getPair(token0, token1), amount);
-    }
+    function _burnWETH(uint256 amount) private {
+        InewWETH(WETH).transfer(WETH, amount);
+    } 
 
     // **** ADD LIQUIDITY ****
     function _addLiquidity(
@@ -139,7 +139,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             deadline
         );
         TransferHelper.safeTransfer(token, to, amountToken);
-        InewWETH(WETH).burn(address(this), amountETH);
+        _burnWETH(amountETH);
         TransferHelper.safeTransferETH(to, amountETH);
     }
     function removeLiquidityWithPermit(
@@ -191,7 +191,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             deadline
         );
         TransferHelper.safeTransfer(token, to, IERC20(token).balanceOf(address(this)));
-        _burnETHFromPair(token, WETH, amountETH);
+        InewWETH(WETH).transfer(WETH, amountETH);
         TransferHelper.safeTransferETH(to, amountETH);
     }
     function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
@@ -282,7 +282,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
-        _burnETHFromPair(path[0], path[1], amounts[amounts.length - 1]);
+        _burnWETH(amounts[amounts.length - 1]);
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
     function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
@@ -299,7 +299,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
-        _burnETHFromPair(path[0], path[1], amounts[amounts.length - 1]);
+        _burnWETH(amounts[amounts.length - 1]);
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
     function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
@@ -399,7 +399,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         _swapSupportingFeeOnTransferTokens(path, address(this));
         uint amountOut = IERC20(WETH).balanceOf(address(this));
         require(amountOut >= amountOutMin, 'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT');
-        _burnETHFromPair(path[0], path[1], amountOut);
+        _burnWETH(amountOut);
         TransferHelper.safeTransferETH(to, amountOut);
     }
 
