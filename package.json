@@ -10,9 +10,6 @@
     "deploy:ftm": "truffle migrate --network fantom",
     "deploy:ftmtest": "truffle migrate --network fantomtest"
   },
-  "engines": {
-    "node": ">=12.18"
-  },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.1.0",
@@ -29,6 +26,7 @@
     "truffle-flattener": "^1.4.4"
   },
   "devDependencies": {
+    "node": "18.4.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "chai": "^4.2.0",
     "ethereum-waffle": "^3.0.0",
