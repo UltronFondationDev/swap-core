@@ -5,7 +5,13 @@ task("deploy", "Deploy")
   .setAction(async (taskArgs, {run, ethers, network}) => {
       const uniswapV2Factory = await run("factory");
 
-      const weth = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; // goerli
+      let weth;
+      if(network.name === 'goerli') {
+            weth = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; 
+      }
+      else if(network.name === 'ultron_testnet') {
+            weth = "0xE2619ab40a445526B0AaDff944F994971d2EAc05"; 
+      }
       const uniswapV2Router = await run("router", { factory: uniswapV2Factory, weth: weth });
 
       const setRouterInitial = await run("set-router", { factory: uniswapV2Factory, router: uniswapV2Router });
