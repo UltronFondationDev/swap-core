@@ -63,23 +63,25 @@ subtask("set-router", "Setting UniswapV2Router Address in UniswapV2Factory after
             return true;
       });
 
-task("deploy-token", "deploying erc20 token")
+task("deploy-tokens", "deploying erc20 tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
           const tokenFactory = await ethers.getContractFactory("ERC20test", signer);
           const totalSupply = ethers.utils.parseUnits("1000", 18);
-          const token = await (await tokenFactory.deploy(totalSupply, "MyToken1", "MYT1")).deployed();
-          console.log(`The token: \u001b[1;34m${token.address}\u001b[0m`);    
+          const token0 = await (await tokenFactory.deploy(totalSupply, "MyToken0", "MYT0")).deployed();
+          const token1 = await (await tokenFactory.deploy(totalSupply, "MyToken1", "MYT1")).deployed();
+          console.log(`The token0: \u001b[1;34m${token0.address}\u001b[0m`); 
+          console.log(`The token1: \u001b[1;34m${token1.address}\u001b[0m`);       
       });
 
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0xFe21Dd0eC80e744A473770827E1aD6393A5A94F0";
+          const routerAddress = "0x97FDd294024f50c388e39e73F1705a35cfE87656";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer);
 
-          const tokenAddress1 = "0x400b3D2Ac98f93e14146E330210910f396f59C1E";
-          const tokenAddress2 = "0x14Fee79883d7CDa8bd73988896C5863D03618085"
+          const tokenAddress1 = "0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4";
+          const tokenAddress2 = "0x2806bB5E34A135f17d521899dfB3c8dC3Fd51Ee3"
 
           const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);
           const token2 = await ethers.getContractAt("ERC20test", tokenAddress2, signer);   
