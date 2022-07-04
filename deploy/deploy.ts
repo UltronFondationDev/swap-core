@@ -68,27 +68,27 @@ task("deploy-token", "deploying erc20 token")
           const signer = (await ethers.getSigners())[0];
           const tokenFactory = await ethers.getContractFactory("ERC20test", signer);
           const totalSupply = ethers.utils.parseUnits("1000", 18);
-          const token = await (await tokenFactory.deploy(totalSupply, "MyToken2", "MYT2")).deployed();
+          const token = await (await tokenFactory.deploy(totalSupply, "MyToken1", "MYT1")).deployed();
           console.log(`The token: \u001b[1;34m${token.address}\u001b[0m`);    
       });
 
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x9DcD76b4A7357249d6160D456670bAcC53292e27";
+          const routerAddress = "0xFe21Dd0eC80e744A473770827E1aD6393A5A94F0";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer);
 
           const tokenAddress1 = "0x400b3D2Ac98f93e14146E330210910f396f59C1E";
-          const tokenAddress2 = "0x598E5dBC2f6513E6cb1bA253b255A5b73A2a720b"
+          const tokenAddress2 = "0x14Fee79883d7CDa8bd73988896C5863D03618085"
 
           const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);
           const token2 = await ethers.getContractAt("ERC20test", tokenAddress2, signer);   
       
-          const amountADesired = ethers.utils.parseUnits("50", 18);
-          const amountBDesired = ethers.utils.parseUnits("50", 18);
+          const amountADesired = ethers.utils.parseUnits("20", 18);
+          const amountBDesired = ethers.utils.parseUnits("20", 18);
           
-          const amountAMin = ethers.utils.parseUnits("40", 18);
-          const amountBMin = ethers.utils.parseUnits("40", 18);
+          const amountAMin = ethers.utils.parseUnits("20", 18);
+          const amountBMin = ethers.utils.parseUnits("20", 18);
 
           await token1.approve(routerAddress, amountADesired);
           await token2.approve(routerAddress, amountBDesired);
