@@ -12,14 +12,21 @@ task("deploy", "Deploy")
       else if(network.name === 'ultron_testnet') {
             weth = "0xE2619ab40a445526B0AaDff944F994971d2EAc05"; 
       }
+
+      const dao = await run("dao", { factory: uniswapV2Factory });
+
+      const setDaoIntitial = await run("set-dao-initial", { factory: uniswapV2Factory, dao: dao });
+
       const uniswapV2Router = await run("router", { factory: uniswapV2Factory, weth: weth });
 
-      const setRouterInitial = await run("set-router", { factory: uniswapV2Factory, router: uniswapV2Router });
+      const setRouter = await run("set-router", { factory: uniswapV2Factory, dao: dao, router: uniswapV2Router });
 
       console.log("=".repeat(50));
       Helpers.logDeploy('UniswapV2Factory',uniswapV2Factory);
+      Helpers.logDeploy('UniswapDAO',dao);
       Helpers.logDeploy('UniswapV2Router02', uniswapV2Router);
-      Helpers.logDeploy('SetRouterInitial', setRouterInitial);
+      Helpers.logDeploy('SetDaoIntitial', setDaoIntitial);
+      Helpers.logDeploy('SetRouter', setRouter);
   });
 
 /*========== UniswapV2Factory ==========*/
@@ -33,6 +40,33 @@ subtask("factory", "The contract UniswapV2Factory is deployed")
             const UniswapV2Factory = await (await UniswapV2Factory_Factory.deploy(feeToSetter, treasuryAddress)).deployed();
             console.log(`The UniswapV2Factory: \u001b[1;34m${UniswapV2Factory.address}\u001b[0m`);    
             return UniswapV2Factory.address;
+      });
+
+/*========== UniswapDAO ==========*/
+subtask("dao", "The contract UniswapDAO is deployed")
+      .addParam("factory", "UniswapDAO address", "", types.string)
+      .setAction(async (taskArgs, { ethers, network }) => {
+            const signer = (await ethers.getSigners())[0];
+
+            const UniswapDAOFactory = await ethers.getContractFactory("UniswapDAO", signer);
+            const dao = await (await UniswapDAOFactory.deploy(taskArgs.factory)).deployed();
+            console.log(`The UniswapDAO: \u001b[1;34m${dao.address}\u001b[0m`);    
+            return dao.address;
+      });
+
+/*========== set-dao-initial ==========*/
+subtask("set-dao-initial", "Setting UniswapDAO Address in UniswapV2Factory after deploying UniswapDAO")
+      .addParam("factory", "UniswapV2Factory address", "", types.string)      
+      .addParam("dao", "UniswapDAO address", "", types.string)
+      .setAction(async (taskArgs, { ethers, network }) => {
+            const signer = (await ethers.getSigners())[0];
+
+            const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", taskArgs.factory, signer);
+            await UniswapV2Factory.setDAOContractInitial(taskArgs.dao);
+            await Helpers.delay(4000);
+            
+            console.info(await UniswapV2Factory.daoAddress());
+            return true;
       });
 
 /*========== UniswapV2Router02 ==========*/
@@ -51,12 +85,17 @@ subtask("router", "The contract UniswapV2Router02 is deployed")
 /*========== set-router ==========*/
 subtask("set-router", "Setting UniswapV2Router Address in UniswapV2Factory after deploying UniswapV2Router")
       .addParam("factory", "UniswapV2Factory address", "", types.string)      
+      .addParam("dao", "UniswapDAO address", "", types.string)      
       .addParam("router", "UniswapV2Router address", "", types.string)
       .setAction(async (taskArgs, { ethers, network }) => {
             const signer = (await ethers.getSigners())[0];
 
+            const UniswapDAO = await ethers.getContractAt("UniswapDAO", taskArgs.dao, signer);
+            await UniswapDAO.newRouterChangeRequest(taskArgs.router);
+            await Helpers.delay(4000);
+
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", taskArgs.factory, signer);
-            await UniswapV2Factory.setRouterAddress(taskArgs.router);
+            await UniswapV2Factory.setRouterAddress(1);
             await Helpers.delay(4000);
             
             console.info(await UniswapV2Factory.routerAddress());
