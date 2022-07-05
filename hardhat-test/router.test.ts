@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import { UniswapV2Router02, UniswapV2Factory, UniswapV2Factory__factory, UniswapV2Router02__factory, ERC20test, ERC20test__factory, WETH, WETH__factory, NewWETH, NewWETH__factory } from "../typechain-types";
+import { UniswapV2Router02, UniswapV2Factory, UniswapV2Factory__factory, UniswapV2Router02__factory, ERC20test, ERC20test__factory, WETH, WETH__factory, NewWETH, NewWETH__factory, UniswapDAO, UniswapDAO__factory } from "../typechain-types";
 import {expect} from "chai";
 import { BigNumber, utils } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -21,6 +21,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     let treasuryAccount: SignerWithAddress;
 
     let factory: UniswapV2Factory;
+    let dao: UniswapDAO;
     let router: UniswapV2Router02;
     let weth: NewWETH;
     let token1: ERC20test;
@@ -33,11 +34,19 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         [ owner, treasuryAccount ] = await ethers.getSigners();
 
-        const feeToSetter = owner.address;
         const treasuryAddress = treasuryAccount.address;
 
-        factory = await (await new UniswapV2Factory__factory(owner).deploy(feeToSetter, treasuryAddress)).deployed();
+        factory = await (await new UniswapV2Factory__factory(owner).deploy(owner.address, treasuryAddress)).deployed();
         console.log(`${beforeTest}Deployed UniswapV2Factory contract: ${colorBlue}${factory.address}${colorReset}`);
+
+        dao = await (await new UniswapDAO__factory(owner).deploy(factory.address)).deployed();
+        console.log(`${beforeTest}Deployed UniswapDAO contract: ${colorBlue}${dao.address}${colorReset}`);
+
+        await expect(factory.connect(treasuryAccount).setDAOContractInitial(dao.address)).revertedWith("not daoSetter");
+        await expect(factory.connect(owner).setDAOContractInitial(zeroAddress)).revertedWith("zero address");
+        await expect(factory.connect(owner).setDAOContractInitial(owner.address)).revertedWith("EOA");
+        await factory.connect(owner).setDAOContractInitial(dao.address);
+        console.log(`${beforeTest}Set dao contract in factory: ${colorBlue}${dao.address}${colorReset}`);
 
         weth = await (await new NewWETH__factory(owner).deploy()).deployed();
         console.log(`${beforeTest}Deployed wETH contract: ${colorBlue}${weth.address}${colorReset}`);
@@ -45,7 +54,8 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         router = await (await new UniswapV2Router02__factory(owner).deploy(factory.address, weth.address)).deployed();
         console.log(`${beforeTest}Deployed UniswapV2Router02 contract: ${colorBlue}${router.address}${colorReset}`);
         
-        await factory.connect(owner).setRouterAddress(router.address);
+        await dao.connect(owner).newRouterChangeRequest(router.address);
+        await factory.connect(owner).setRouterAddress(1);
         console.log(`${beforeTest}${colorBlue}Inserted${colorReset} initial router address to factory: ${colorGreen}${router.address}${colorReset}`);    
 
         const totalSupply = ethers.utils.parseUnits("1000", 18);
@@ -53,8 +63,13 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         token2 = await (await new ERC20test__factory(owner).deploy(totalSupply, "MyToken2", "MYT2")).deployed();
     });
 
+    it("Dao contract address is already set\n", async () => {
+        await expect(factory.connect(owner).setDAOContractInitial(dao.address)).revertedWith("already set");
+    });
+
     it("Router contract address is zero address\n", async () => {
-        await expect(factory.connect(owner).setRouterAddress(zeroAddress)).revertedWith("zero address");
+        await dao.connect(owner).newRouterChangeRequest(router.address);
+        await expect(factory.connect(owner).setRouterAddress(2)).revertedWith("same address");
     });
 
     it("Add liq if liq does not exist\n", async () => {       
