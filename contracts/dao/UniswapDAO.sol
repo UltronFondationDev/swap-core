@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.6.12;
+pragma experimental ABIEncoderV2;
 
 import "./IDAO.sol";
 import "./Multisig.sol";
 
 /// @title Decentralized autonomous organization for Swap_Factory
 /// @notice DAO contract, which provides Swap_Factory functions manipulation 
-contract DAO is Multisig, IDAO {
+contract UniswapDAO is Multisig, IDAO {
     struct DAOChangeRequest {
         address newDAOAddress;
         RequestStatus status;
@@ -73,6 +74,14 @@ contract DAO is Multisig, IDAO {
     }
 
     /**
+     * @notice Gets DAO change request Count
+     * @return Returns DAO change request Count 
+    */
+    function getDAOChangeRequestCount() external view returns(uint) {
+        return daoChangeRequestCounter;
+    }
+
+    /**
      * @notice Gets feeTo change request Count
      * @return Returns feeTo change request Count 
     */
@@ -94,6 +103,38 @@ contract DAO is Multisig, IDAO {
     */
     function getRouterChangeRequestCounter() external view returns(uint) {
         return routerChangeRequestCounter;
+    }
+
+    /**
+     * @notice Gets changing feeTo request
+     * @param id the id of change feeTo request
+    */
+    function getDAOChangeRequest(uint id) external view returns (DAOChangeRequest memory) {
+        return daoChangeRequests[id];
+    }
+
+    /**
+     * @notice Gets changing feeTo reques
+     * @param id the id of change feeTo request
+    */
+    function getFeeToChangeRequest(uint id) external view returns (FeeToChangeRequest memory) {
+        return feeToChangeRequests[id];
+    }
+
+    /**
+     * @notice Gets changing treasury request
+     * @param id the id of change treasury request
+    */
+    function getTreasuryChangeRequest(uint id) external view returns (TreasuryChangeRequest memory) {
+        return treasuryChangeRequests[id];
+    }
+
+    /**
+     * @notice Gets changing router request
+     * @param id the id of change router request
+    */
+    function getRouterChangeRequest(uint id) external view returns (RouterChangeRequest memory) {
+        return routerChangeRequests[id];
     }
 
     /**
