@@ -1,4 +1,5 @@
 import { subtask, task, types } from "hardhat/config";
+import { dao } from "../typechain-types";
 import * as Helpers from "./helpers";
 
 task("deploy", "Deploy")
@@ -113,11 +114,30 @@ task("deploy-tokens", "deploying erc20 tokens")
           console.log(`The token1: \u001b[1;34m${token1.address}\u001b[0m`);       
       });
 
+task("set-fee-to", "New FeeTo address")
+      .setAction(async (_, { ethers }) => {
+            const signer = (await ethers.getSigners())[0];
+            const factoryAddress = "0xAEc9A651e12cb5259679CccEe2314716773e0073";
+            const daoAddress = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
+
+            const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
+            const UniswapDAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
+
+            const feeToAddress = "0xa30396f2a233fdFFCC3C2b5445e24bfe01593b3b" // brewETH
+
+            await UniswapDAO.newFeeToChangeRequest(feeToAddress);
+            await Helpers.delay(4000);
+            await UniswapV2Factory.setFeeTo(1);
+            await Helpers.delay(4000);
+
+            console.info(await UniswapV2Factory.feeTo());
+      })
+
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x97FDd294024f50c388e39e73F1705a35cfE87656";
-          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer);
+          const routerAddress = "0x360a7c078b91a8Dcc821a8f683ef087075560f98";
+          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress1 = "0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4";
           const tokenAddress2 = "0x2806bB5E34A135f17d521899dfB3c8dC3Fd51Ee3"
