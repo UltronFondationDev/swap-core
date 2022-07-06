@@ -101,7 +101,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @notice Gets router change request count
      * @return Returns router change request count 
     */
-    function getRouterChangeRequestCounter() external view returns(uint) {
+    function getRouterChangeRequestCount() external view returns(uint) {
         return routerChangeRequestCounter;
     }
 
