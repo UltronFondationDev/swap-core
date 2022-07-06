@@ -385,7 +385,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @notice Allows changing dao request if it is not approved and there are enough votes
      * @param id the id of change dao request
     */
-    function isDAOChangeAvailable(uint256 id) 
+    function isDAOChangeAvailable(uint id) 
         external 
         view 
         override
@@ -400,7 +400,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @notice Counts and gets affirmative votes for change dao request
      * @param id request id to be executed
     */
-    function countGetChangeDAOAffirmativeVotes(uint256 id) external view returns(uint256) {
+    function countGetChangeDAOAffirmativeVotes(uint id) external view returns(uint) {
         return _countGet(daoChangeRequestConfirmations, id);
     }
 
@@ -408,7 +408,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @notice Cancels dao change request if it is active
      * @param id the id of dao change request
     */
-    function cancelDAOChangeRequest(uint256 id) external onlyVoter(msg.sender) {
+    function cancelDAOChangeRequest(uint id) external onlyVoter(msg.sender) {
         require(daoChangeRequests[id].status == RequestStatus.Active, "not active");
         daoChangeRequests[id].status = RequestStatus.Canceled;
     }
@@ -417,7 +417,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @notice Approves changing dao request if it is not approved
      * @param id the id of dao change request
     */
-    function confirmDAOChangeRequest(uint256 id) 
+    function confirmDAOChangeRequest(uint id) 
         external 
         override
         onlyFactory
@@ -434,7 +434,7 @@ contract UniswapDAO is Multisig, IDAO {
      * @param voteType the vote type: true/false = insert/remove vote
      * @param id the id of dao change request
     */
-    function newVoteForDAOChangeRequest(bool voteType, uint256 id) external {
+    function newVoteForDAOChangeRequest(bool voteType, uint id) external {
         require(daoChangeRequests[id].status == RequestStatus.Active, "not active");
         _newVoteFor(daoChangeRequestConfirmations, id, voteType, RequestType.DAOChange);
     }
@@ -446,7 +446,7 @@ contract UniswapDAO is Multisig, IDAO {
     function newDAOAddressChangeRequest(address _address)
         external
         onlyVoter(msg.sender)
-        returns (uint256)
+        returns (uint)
     {
         require(_address!= address(0), "zero address");
         uint32 size;

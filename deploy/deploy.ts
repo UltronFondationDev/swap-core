@@ -1,5 +1,4 @@
 import { subtask, task, types } from "hardhat/config";
-import { dao } from "../typechain-types";
 import * as Helpers from "./helpers";
 
 task("deploy", "Deploy")
