@@ -6,8 +6,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     const beforeTest = "\t";
-    const insideTest = "\t\t";
-    const colorRed = "\x1b[31m";
     const colorGreen = "\x1b[32m";
     const colorBlue = "\x1b[36m";
     const colorReset = "\x1b[0m";
