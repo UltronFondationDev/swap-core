@@ -150,24 +150,17 @@ describe("\x1b[33mDAO test\x1b[0m\n", () => {
         [ owner, treasuryAccount, someAccount ] = await ethers.getSigners();
 
         factory = await (await new UniswapV2Factory__factory(owner).deploy(owner.address, treasuryAccount.address)).deployed();
-        console.log(`${beforeTest}Deployed factory contract: ${colorBlue}${factory.address}${colorReset}`);
 
         weth = await (await new NewWETH__factory(owner).deploy()).deployed();
-        console.log(`${beforeTest}Deployed wETH contract: ${colorBlue}${weth.address}${colorReset}`);
 
         router = await (await new UniswapV2Router02__factory(owner).deploy(factory.address, weth.address)).deployed();
 
         dao = await (await new UniswapDAO__factory(owner).deploy(factory.address)).deployed();
-        console.log(`${beforeTest}Deployed DAO contract: ${colorBlue}${dao.address}${colorReset}`)
-        console.log(`${beforeTest}Inserted initial voter : ${colorBlue}${owner.address}${colorReset}`);
     });
 
     it("Set DAO initial\n", async () => {
-        console.log(`${insideTest}${colorRed}Reverts${colorReset} if sender is not a voter`);
         await expect(factory.connect(treasuryAccount).setDAOContractInitial(dao.address)).revertedWith("not daoSetter"); 
-        console.log(`${insideTest}${colorRed}Reverts${colorReset} if address is EOA`);
         await expect(factory.connect(owner).setDAOContractInitial(someAccount.address)).revertedWith("EOA");
-        console.log(`${insideTest}${colorRed}Reverts${colorReset} if new dao is zero address`);
         await expect(factory.connect(owner).setDAOContractInitial(zeroAddress)).revertedWith("zero address"); 
        
         console.log(`${insideTest}Creates new dao change request`);
