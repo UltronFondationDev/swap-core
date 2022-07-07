@@ -8,6 +8,7 @@ import './libraries/UQ112x112.sol';
 import './interfaces/IERC20.sol';
 import './interfaces/IUniswapV2Factory.sol';
 import './interfaces/IUniswapV2Callee.sol';
+import './interfaces/IUniswapV2Router02.sol';
 
 contract UniswapV2Pair is UniswapV2ERC20 {
     using SafeMath  for uint;
@@ -20,13 +21,15 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     address public token0;
     address public token1;
 
-    uint112 private reserve0;           // uses single storage slot, accessible via getReserves
-    uint112 private reserve1;           // uses single storage slot, accessible via getReserves
-    uint32  private blockTimestampLast; // uses single storage slot, accessible via getReserves
+    IUniswapV2Router02 public router; /// @dev UniswapV2Router02
+
+    uint112 private reserve0;           /// @dev uses single storage slot, accessible via getReserves
+    uint112 private reserve1;           /// @dev uses single storage slot, accessible via getReserves
+    uint32  private blockTimestampLast; /// @dev uses single storage slot, accessible via getReserves
 
     uint public price0CumulativeLast;
     uint public price1CumulativeLast;
-    uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
+    uint public kLast; /// @dev reserve0 * reserve1, as of immediately after the most recent liquidity event
 
     uint private unlocked = 1;
     modifier lock() {
@@ -58,16 +61,17 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         address indexed to
     );
     event Sync(uint112 reserve0, uint112 reserve1);
-
+    
     constructor() public {
-        factory = msg.sender;
-    }
+        factory = msg.sender;  
+    } 
 
     // called once by the factory at time of deployment
-    function initialize(address _token0, address _token1) external {
+    function initialize(address _token0, address _token1, address _router) external {
         require(msg.sender == factory, 'UniswapV2: FORBIDDEN'); // sufficient check
         token0 = _token0;
         token1 = _token1;
+        router = IUniswapV2Router02(_router);
     }
 
     // update reserves and, on the first call per block, price accumulators
@@ -178,9 +182,51 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
-        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
+
+        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(2));
+        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(2));
         require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UniswapV2: K');
+        
+        address _token0 = token0;
+        address _token1 = token1;
+
+        uint fee0 = amount0In.mul(10) / 10000;
+        uint fee1 = amount1In.mul(10) / 10000;
+        
+        address wethAddress = router.WETH();
+        address treasuryAddress = IUniswapV2Factory(factory).treasuryAddress();
+        if(IUniswapV2Factory(factory).getPair(_token0, wethAddress) == address(0) 
+            || IUniswapV2Factory(factory).getPair(_token1, wethAddress) == address(0) 
+            || _token0 == wethAddress || _token1 == wethAddress) {
+            if(fee0 > 0) {
+                _safeTransfer(_token0, treasuryAddress, fee0);
+            }
+            if(fee1 > 0) {
+                _safeTransfer(_token1, treasuryAddress, fee1);
+            }
+        }
+        else {
+            if(fee0 > 0) {
+                address[] memory path0 = new address[](2);
+                path0[0] = _token0;
+                path0[1] = wethAddress; 
+                uint[] memory amountsOut0 = router.getAmountsOut(fee0, path0);
+                uint amountOutMin0 = amountsOut0[amountsOut0.length - 1].sub(amountsOut0[amountsOut0.length - 1].mul(10) / 100);
+                
+                IERC20(_token0).approve(address(router), fee0);
+                router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
+            }
+            if(fee1 > 0) {
+                address[] memory path1 = new address[](2);
+                path1[0] = _token1;
+                path1[1] = wethAddress;
+                uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);
+                uint amountOutMin1 = amountsOut1[amountsOut1.length - 1].sub(amountsOut1[amountsOut1.length - 1].mul(10) / 100);
+
+                IERC20(_token1).approve(address(router), fee1);
+                router.swapExactTokensForETH(fee1, amountOutMin1, path1, treasuryAddress, block.timestamp.add(30));
+            }
+        }
         }
 
         _update(balance0, balance1, _reserve0, _reserve1);

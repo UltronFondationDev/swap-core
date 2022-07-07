@@ -16,3 +16,4 @@ artifacts/
 .env
 .deps/
 yarn.lock 
+typechain-types/
