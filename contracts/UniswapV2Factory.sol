@@ -4,22 +4,25 @@ pragma solidity =0.6.12;
 
 import './interfaces/IUniswapV2Factory.sol';
 import './UniswapV2Pair.sol';
+import "./dao/IDAO.sol";
 
 contract UniswapV2Factory is IUniswapV2Factory {
     bytes32 public constant INIT_CODE_PAIR_HASH = keccak256(abi.encodePacked(type(UniswapV2Pair).creationCode));
     address public override feeTo;
-    address public override feeToSetter;
 
     mapping(address => mapping(address => address)) public override getPair;
     address[] public override allPairs;
 
+    address public override initialDaoSetter; /// @dev address for setting the initial DAO address
     address public override routerAddress; /// @dev UniswapV2Router02 address
     address public override treasuryAddress; /// @dev address for sending fee
 
+    address public override daoAddress;
+
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
-    constructor(address _feeToSetter, address _treasuryAddress) public {
-        feeToSetter = _feeToSetter;
+    constructor(address _initialDaoSetter, address _treasuryAddress) public {
+        initialDaoSetter = _initialDaoSetter;
         treasuryAddress = _treasuryAddress;
     }
 
@@ -41,33 +44,55 @@ contract UniswapV2Factory is IUniswapV2Factory {
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        UniswapV2Pair(pair).initialize(token0, token1, treasuryAddress, routerAddress);
+        UniswapV2Pair(pair).initialize(token0, token1, routerAddress);
         getPair[token0][token1] = pair;
         getPair[token1][token0] = pair; // populate mapping in the reverse direction
         allPairs.push(pair);
         emit PairCreated(token0, token1, pair, allPairs.length);
     }
 
-    function setFeeTo(address _feeTo) external override {
-        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+    /**
+        @notice Sets DAO contract address only once by initial DaoSetter
+        @param _address The DAO address
+     */
+    function setDAOContractInitial(address _address) external override {
+        require(initialDaoSetter == msg.sender, "not daoSetter");
+        require(daoAddress == address(0), "already set");
+        require(_address != address(0), "zero address");
+        uint32 size;
+        assembly {
+            size := extcodesize(_address)
+        }
+        require(size > 0, "EOA");
+        daoAddress = _address;
+    }
+
+    function setDao(uint id) external override {
+        address _daoAddress = IDAO(daoAddress).isDAOChangeAvailable(id);
+        require(_daoAddress != daoAddress, 'same address');
+        daoAddress = _daoAddress;
+        require(IDAO(daoAddress).confirmDAOChangeRequest(id), "confirmed");
+    }
+
+    function setFeeTo(uint id) external override {
+        address _feeTo = IDAO(daoAddress).isFeeToChangeAvailable(id);
+        require(_feeTo != feeTo, 'same address');
         feeTo = _feeTo;
+        require(IDAO(daoAddress).confirmFeeToChangeRequest(id), "confirmed");
     }
 
-    function setFeeToSetter(address _feeToSetter) external override {
-        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
-        feeToSetter = _feeToSetter;
-    }
-
-    function setTreasuryAddress(address _treasuryAddress) external override {
-        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
-        require(_treasuryAddress != address(0), "zero address");
+    function setTreasuryAddress(uint id) external override {
+        address _treasuryAddress = IDAO(daoAddress).isTreasuryChangeAvailable(id);
+        require(_treasuryAddress != treasuryAddress, 'same address');
         treasuryAddress = _treasuryAddress;
+        require(IDAO(daoAddress).confirmTreasuryChangeRequest(id), "confirmed");
     }
 
-    function setRouterAddress(address _routerAddress) external override {
-        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
-        require(_routerAddress != address(0), "zero address");
+    function setRouterAddress(uint id) external override {
+        address _routerAddress = IDAO(daoAddress).isRouterChangeAvailable(id);
+        require(_routerAddress != routerAddress, 'same address');
         routerAddress = _routerAddress;
+        require(IDAO(daoAddress).confirmRouterChangeRequest(id), "confirmed");
     }
 
 }

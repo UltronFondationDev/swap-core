@@ -6,12 +6,15 @@
     "compile": "truffle compile",
     "test": "npx builder test",
     "coverage": "npx builder coverage",
+    "lint": "yarn prettier ./test/*.ts --check",
+    "lint:fix": "yarn prettier ./test/*.ts --write",
+    "clean": "rimraf ./build/",
+    "precompile": "yarn clean",
+    "pretest": "yarn compile",
+    "prepublishOnly": "yarn test",
     "deploy": "truffle migrate",
     "deploy:ftm": "truffle migrate --network fantom",
     "deploy:ftmtest": "truffle migrate --network fantomtest"
-  },
-  "engines": {
-    "node": ">=12.18"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",

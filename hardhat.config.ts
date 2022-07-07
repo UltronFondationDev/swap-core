@@ -93,7 +93,7 @@ const config: HardhatUserConfig = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     ultron_testnet: {
-      url: `http://51.250.34.31:18545`,
+      url: `https://ultron-dev.io`,
       chainId: 1230,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },

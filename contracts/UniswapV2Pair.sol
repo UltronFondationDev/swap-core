@@ -22,7 +22,6 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     address public token1;
 
     IUniswapV2Router02 public router; /// @dev UniswapV2Router02
-    address public treasuryAddress; /// @dev address for sending fee
 
     uint112 private reserve0;           /// @dev uses single storage slot, accessible via getReserves
     uint112 private reserve1;           /// @dev uses single storage slot, accessible via getReserves
@@ -68,11 +67,10 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     } 
 
     // called once by the factory at time of deployment
-    function initialize(address _token0, address _token1, address _treasuryAddress, address _router) external {
+    function initialize(address _token0, address _token1, address _router) external {
         require(msg.sender == factory, 'UniswapV2: FORBIDDEN'); // sufficient check
         token0 = _token0;
         token1 = _token1;
-        treasuryAddress = _treasuryAddress;
         router = IUniswapV2Router02(_router);
     }
 
@@ -196,6 +194,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint fee1 = amount1In.mul(10) / 10000;
         
         address wethAddress = router.WETH();
+        address treasuryAddress = IUniswapV2Factory(factory).treasuryAddress();
         if(IUniswapV2Factory(factory).getPair(_token0, wethAddress) == address(0) 
             || IUniswapV2Factory(factory).getPair(_token1, wethAddress) == address(0) 
             || _token0 == wethAddress || _token1 == wethAddress) {
@@ -218,7 +217,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
                 router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
             }
             if(fee1 > 0) {
-                address[] memory path1 = ;
+                address[] memory path1 = new address[](2);
                 path1[0] = _token1;
                 path1[1] = wethAddress;
                 uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);

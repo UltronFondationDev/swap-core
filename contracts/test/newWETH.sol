@@ -30,6 +30,7 @@ contract newWETH {
 
     string private _name = "wETH";
     string private _symbol = "wETH";
+    mapping (address => bool) public minters;
     constructor() payable public {
     }
     /**
@@ -48,7 +49,7 @@ contract newWETH {
     }
 
     /**
-     * @dev See {IERC20-totalSupply}.
+     * @dev See {IERC20-totalSupply}.require(containsMinter(msg.sender), "not burner");
      */
     function totalSupply() external view returns (uint256) {
         return _totalSupply;
@@ -59,6 +60,10 @@ contract newWETH {
      */
     function balanceOf(address account) external view returns (uint256) {
         return _balances[account];
+    }
+
+    function containsMinter(address _wallet) internal view returns (bool){
+        return minters[_wallet];
     }
     
     /**
@@ -166,7 +171,9 @@ contract newWETH {
     }
 
     receive() external payable {
-        _mint(msg.sender, msg.value);
+        if(!containsMinter(msg.sender)) {
+            _mint(msg.sender, msg.value);
+        }
     }
 
     /**
@@ -214,10 +221,12 @@ contract newWETH {
     }
 
     function mint(address account, uint256 amount) external {
+        require(containsMinter(msg.sender), "not minter");
         _mint(account, amount);
     }
 
     function burn(address account, uint256 amount) external {
+        require(containsMinter(msg.sender), "not burner");
         _burn(account, amount);
     }
 
