@@ -183,54 +183,51 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
 
-        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(2));
-        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(2));
+        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
+        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
         require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UniswapV2: K');
-        
-        address _token0 = token0;
-        address _token1 = token1;
 
         uint fee0 = amount0In.mul(10) / 10000;
         uint fee1 = amount1In.mul(10) / 10000;
-        
+
         address wethAddress = router.WETH();
         address treasuryAddress = IUniswapV2Factory(factory).treasuryAddress();
-        if(IUniswapV2Factory(factory).getPair(_token0, wethAddress) == address(0) 
-            || IUniswapV2Factory(factory).getPair(_token1, wethAddress) == address(0) 
-            || _token0 == wethAddress || _token1 == wethAddress) {
+
+        if(IUniswapV2Factory(factory).getPair(token0, wethAddress) == address(0) 
+            || IUniswapV2Factory(factory).getPair(token1, wethAddress) == address(0) 
+            || token0 == wethAddress || token1 == wethAddress)    
+        {
             if(fee0 > 0) {
-                _safeTransfer(_token0, treasuryAddress, fee0);
+                _safeTransfer(token0, treasuryAddress, fee0);
             }
             if(fee1 > 0) {
-                _safeTransfer(_token1, treasuryAddress, fee1);
+                _safeTransfer(token1, treasuryAddress, fee1);
             }
         }
-        else {
+        else 
+        {
             if(fee0 > 0) {
-                address[] memory path0 = new address[](2);
-                path0[0] = _token0;
-                path0[1] = wethAddress; 
-                uint[] memory amountsOut0 = router.getAmountsOut(fee0, path0);
-                uint amountOutMin0 = amountsOut0[amountsOut0.length - 1].sub(amountsOut0[amountsOut0.length - 1].mul(10) / 100);
-                
-                IERC20(_token0).approve(address(router), fee0);
-                router.swapExactTokensForETH(fee0, amountOutMin0, path0, treasuryAddress, block.timestamp.add(30));
+                swapWETHFee(wethAddress, treasuryAddress, fee0, token0);
             }
             if(fee1 > 0) {
-                address[] memory path1 = new address[](2);
-                path1[0] = _token1;
-                path1[1] = wethAddress;
-                uint[] memory amountsOut1 = router.getAmountsOut(fee1, path1);
-                uint amountOutMin1 = amountsOut1[amountsOut1.length - 1].sub(amountsOut1[amountsOut1.length - 1].mul(10) / 100);
-
-                IERC20(_token1).approve(address(router), fee1);
-                router.swapExactTokensForETH(fee1, amountOutMin1, path1, treasuryAddress, block.timestamp.add(30));
+                swapWETHFee(wethAddress, treasuryAddress, fee1, token1);
             }
         }
         }
 
         _update(balance0, balance1, _reserve0, _reserve1);
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
+    }
+
+    function swapWETHFee(address wethAddress, address treasuryAddress, uint fee, address tokenAddress) private {
+        address[] memory path = new address[](2);
+        path[0] = tokenAddress;
+        path[1] = wethAddress;
+        uint[] memory amountsOut = router.getAmountsOut(fee, path);
+        uint amountOutMin = amountsOut[amountsOut.length - 1].sub(amountsOut[amountsOut.length - 1].mul(10) / 100);
+
+        IERC20(tokenAddress).approve(address(router), fee);
+        router.swapExactTokensForETH(fee, amountOutMin, path, treasuryAddress, block.timestamp.add(30));
     }
 
     // force balances to match reserves
