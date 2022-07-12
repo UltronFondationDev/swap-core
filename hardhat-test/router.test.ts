@@ -46,7 +46,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         await dao.connect(owner).newRouterChangeRequest(router.address);
         await factory.connect(owner).setRouterAddress(1);
 
-        const totalSupply = ethers.utils.parseUnits("1000", 18);
+        const totalSupply = ethers.utils.parseUnits("1000000000000", 18);
         token1 = await (await new ERC20test__factory(owner).deploy(totalSupply, "MyToken1", "MYT1")).deployed();
         token2 = await (await new ERC20test__factory(owner).deploy(totalSupply, "MyToken2", "MYT2")).deployed();
     });
@@ -434,6 +434,37 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
 
         expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.055798975874", 12));
+        expect(balanceTreasuryAfterToken2).equals("0");
+    });
+
+    it("swapExactTokensForTokens \n", async () => {    
+        const amountADesired = ethers.utils.parseUnits("1100000", 18);
+        const amountBDesired = ethers.utils.parseUnits("1100000", 18);
+        
+        const amountAMin = ethers.utils.parseUnits("912214.786438342371799266", 18);
+        const amountBMin = ethers.utils.parseUnits("1011246.194892188212312314", 18);
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).addLiquidity(token1.address, token2.address, amountADesired, amountBDesired, amountAMin, amountBMin, owner.address, Date.now() + 20, { gasLimit: 3045000 });
+        
+        const etherAmountForToken1 = ethers.utils.parseEther("1");
+        const etherAmountForToken2 = ethers.utils.parseEther("1");
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token1.address, amountADesired, amountAMin, etherAmountForToken1, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmountForToken1 });
+
+        await token2.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).addLiquidityETH(token2.address, amountADesired, amountAMin, etherAmountForToken2, owner.address, Date.now() + 20, { gasLimit: 3045000, value: etherAmountForToken2 });
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await token2.connect(owner).approve(router.address, amountBDesired);
+        await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits("1", 18), 0, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
+    
+        const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
+
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1", 12));
         expect(balanceTreasuryAfterToken2).equals("0");
     });
 }) 

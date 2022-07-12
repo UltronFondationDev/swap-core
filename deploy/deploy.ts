@@ -106,7 +106,7 @@ task("deploy-tokens", "deploying erc20 tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
           const tokenFactory = await ethers.getContractFactory("ERC20test", signer);
-          const totalSupply = ethers.utils.parseUnits("1000", 18);
+          const totalSupply = ethers.utils.parseUnits("1000000000", 18);
           const token0 = await (await tokenFactory.deploy(totalSupply, "MyToken0", "MYT0")).deployed();
           const token1 = await (await tokenFactory.deploy(totalSupply, "MyToken1", "MYT1")).deployed();
           console.log(`The token0: \u001b[1;34m${token0.address}\u001b[0m`); 
@@ -116,8 +116,8 @@ task("deploy-tokens", "deploying erc20 tokens")
 task("set-fee-to", "New FeeTo address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
-            const factoryAddress = "0xAEc9A651e12cb5259679CccEe2314716773e0073";
-            const daoAddress = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
+            const factoryAddress = "0x47b8d7d6901b674aF69c2c5844F6df2ea8612C38";
+            const daoAddress = "0xC685E8EDDC9f078666794CbfcD8D8351bac404eF";
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
             const UniswapDAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
@@ -135,14 +135,14 @@ task("set-fee-to", "New FeeTo address")
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x360a7c078b91a8Dcc821a8f683ef087075560f98";
+          const routerAddress = "0x5024D1E290523c68f09816f847E6fac5B5eeaf28";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
-          const tokenAddress1 = "0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4";
-          const tokenAddress2 = "0x2806bB5E34A135f17d521899dfB3c8dC3Fd51Ee3"
+          const tokenAddress0 = "0xD0d0B25dBCA9488F409f2f5e8BE92B60CE4e01Ab";
+          const tokenAddress1 = "0xec63D98d3e1C83E72B9e74f7D952331f7Fc765E1"
 
-          const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);
-          const token2 = await ethers.getContractAt("ERC20test", tokenAddress2, signer);   
+          const token0 = await ethers.getContractAt("ERC20test", tokenAddress0, signer);
+          const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);   
       
           const amountADesired = ethers.utils.parseUnits("20", 18);
           const amountBDesired = ethers.utils.parseUnits("20", 18);
@@ -150,9 +150,38 @@ task("add-liq", "adding liq for tokens")
           const amountAMin = ethers.utils.parseUnits("20", 18);
           const amountBMin = ethers.utils.parseUnits("20", 18);
 
+          await token0.approve(routerAddress, amountADesired);
+          await token1.approve(routerAddress, amountBDesired);
+
+          await UniswapV2Router.addLiquidity(tokenAddress0, tokenAddress1, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3000000 });
+      });
+
+task("swap", "swap token0 for token1")
+      .setAction(async (_, { ethers }) => {
+          const signer = (await ethers.getSigners())[0];
+          const routerAddress = "0x5310700c9bacC7De98DC18A56597077eA2EfD7c9";
+          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
+
+          const tokenAddress1 = "0x6E983AAcb09bBd0aB422874c85CFf66B6864d75d";
+          const tokenAddress2 = "0x26d6039C78fC0Ce78C22354bd040E68B1445e2ac"
+
+          const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);
+          const token2 = await ethers.getContractAt("ERC20test", tokenAddress2, signer);
+
+          const amountADesired = ethers.utils.parseUnits("20", 18);
+          const amountBDesired = ethers.utils.parseUnits("20", 18);
+          
+          const amountAMin = ethers.utils.parseUnits("20", 18);
+          const amountBMin = ethers.utils.parseUnits("20", 18);          
+
           await token1.approve(routerAddress, amountADesired);
+          await UniswapV2Router.addLiquidityETH(token2.address, amountADesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3045000, value: amountBMin });
+          
           await token2.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidityETH(token2.address, amountADesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3045000, value: amountBMin });
 
-          await UniswapV2Router.addLiquidity(tokenAddress1, tokenAddress2, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, 1000000000000, { gasLimit: 3000000 });
 
+          await token1.approve(UniswapV2Router.address, amountADesired);
+          await token2.approve(UniswapV2Router.address, amountBDesired);
+          await UniswapV2Router.swapExactTokensForTokens(ethers.utils.parseUnits("1", 18), 0, [token1.address, token2.address], signer.address, Date.now() + 20, { gasLimit: 3045000 });    
       });
