@@ -31,6 +31,8 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     uint public price1CumulativeLast;
     uint public kLast; /// @dev reserve0 * reserve1, as of immediately after the most recent liquidity event
 
+    uint256 private transferedFee;
+
     uint private unlocked = 1;
     modifier lock() {
         require(unlocked == 1, 'UniswapV2: LOCKED');
@@ -182,11 +184,12 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
-        require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UniswapV2: K');
 
+        require(balance0Adjusted.add(transferedFee).mul(balance1Adjusted.add(transferedFee)) >= uint(_reserve0 - transferedFee).mul(_reserve1  - transferedFee).mul(1000**2), 'UniswapV2: K');
+        }
+        {   
         uint fee0 = amount0In.mul(10) / 10000;
         uint fee1 = amount1In.mul(10) / 10000;
 
@@ -198,19 +201,24 @@ contract UniswapV2Pair is UniswapV2ERC20 {
             || token0 == wethAddress || token1 == wethAddress)    
         {
             if(fee0 > 0) {
+                transferedFee += fee0;
                 _safeTransfer(token0, treasuryAddress, fee0);
             }
             if(fee1 > 0) {
+                transferedFee += fee1;
                 _safeTransfer(token1, treasuryAddress, fee1);
             }
         }
         else 
         {
             if(fee0 > 0) {
-                swapWETHFee(wethAddress, treasuryAddress, fee0, token0);
+                transferedFee += fee0;
+                _swapWETHFee(wethAddress, treasuryAddress, fee0, token0);
+
             }
             if(fee1 > 0) {
-                swapWETHFee(wethAddress, treasuryAddress, fee1, token1);
+                transferedFee += fee1;
+                _swapWETHFee(wethAddress, treasuryAddress, fee1, token1);
             }
         }
         }
@@ -219,7 +227,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
 
-    function swapWETHFee(address wethAddress, address treasuryAddress, uint fee, address tokenAddress) private {
+    function _swapWETHFee(address wethAddress, address treasuryAddress, uint fee, address tokenAddress) private {
         address[] memory path = new address[](2);
         path[0] = tokenAddress;
         path[1] = wethAddress;
