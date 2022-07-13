@@ -116,8 +116,8 @@ task("deploy-tokens", "deploying erc20 tokens")
 task("set-fee-to", "New FeeTo address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
-            const factoryAddress = "0x47b8d7d6901b674aF69c2c5844F6df2ea8612C38";
-            const daoAddress = "0xC685E8EDDC9f078666794CbfcD8D8351bac404eF";
+            const factoryAddress = "0xA58B51E1E81bF3602019109FaDCc4f94324a6808";
+            const daoAddress = "0xa8e7855c0FA2e5872275aa56121F0E50EC4ce7B9";
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
             const UniswapDAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
@@ -135,7 +135,7 @@ task("set-fee-to", "New FeeTo address")
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x5024D1E290523c68f09816f847E6fac5B5eeaf28";
+          const routerAddress = "0xcee274F11A092267d4E8cD0E6B3A66C5406a92f7";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress0 = "0xD0d0B25dBCA9488F409f2f5e8BE92B60CE4e01Ab";
@@ -159,7 +159,7 @@ task("add-liq", "adding liq for tokens")
 task("swap", "swap token0 for token1")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x5310700c9bacC7De98DC18A56597077eA2EfD7c9";
+          const routerAddress = "0xcee274F11A092267d4E8cD0E6B3A66C5406a92f7";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress1 = "0x6E983AAcb09bBd0aB422874c85CFf66B6864d75d";
