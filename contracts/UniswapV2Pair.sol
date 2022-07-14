@@ -188,7 +188,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
 
-        require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0 - token0Fee).mul(_reserve1 - token1Fee).mul(1000**2), 'UniswapV2: K');
+        require(balance0Adjusted.add(token0Fee).mul(balance1Adjusted.add(token1Fee)) >= uint(_reserve0 - token0Fee).mul(_reserve1 - token1Fee).mul(1000**2), 'UniswapV2: K');
         }
         {   
         uint fee0 = amount0In.mul(10) / 10000;
@@ -196,7 +196,6 @@ contract UniswapV2Pair is UniswapV2ERC20 {
 
         address wethAddress = router.WETH();
         address treasuryAddress = IUniswapV2Factory(factory).treasuryAddress();
-
         if(IUniswapV2Factory(factory).getPair(token0, wethAddress) == address(0) 
             || IUniswapV2Factory(factory).getPair(token1, wethAddress) == address(0) 
             || token0 == wethAddress || token1 == wethAddress)    
@@ -234,9 +233,13 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         path[1] = wethAddress;
         uint[] memory amountsOut = router.getAmountsOut(fee, path);
         uint amountOutMin = amountsOut[amountsOut.length - 1].sub(amountsOut[amountsOut.length - 1].mul(10) / 100);
-
-        IERC20(tokenAddress).approve(address(router), fee);
-        router.swapExactTokensForETH(fee, amountOutMin, path, treasuryAddress, block.timestamp.add(30));
+        
+        if(amountOutMin > 1000) {
+            IERC20(tokenAddress).approve(address(router), fee);
+            router.swapExactTokensForETH(fee, amountOutMin, path, treasuryAddress, block.timestamp.add(30));
+        } else {
+            _safeTransfer(tokenAddress, treasuryAddress, fee);
+        }
     }
 
     // force balances to match reserves
