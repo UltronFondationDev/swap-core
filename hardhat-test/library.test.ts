@@ -4,7 +4,7 @@ import {expect} from "chai";
 import { BigNumber, utils } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe("\x1b[33mUniswap test\x1b[0m\n", () => {
+describe("\x1b[33mUniswap Library test\x1b[0m\n", () => {
     const beforeTest = "\t";
     const colorGreen = "\x1b[32m";
     const colorBlue = "\x1b[36m";

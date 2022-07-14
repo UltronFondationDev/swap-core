@@ -459,7 +459,6 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         for(let i:number = 1; i < 25; i++) {
             await token1.connect(owner).approve(router.address, amountADesired);
-            await token2.connect(owner).approve(router.address, amountBDesired);
             await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits("1", 18), 0, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });   
             console.log(i);         
         }
@@ -471,7 +470,6 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         expect(balanceTreasuryAfterToken2).equals("0");
 
         await token1.connect(owner).approve(router.address, amountADesired);
-        await token2.connect(owner).approve(router.address, amountBDesired);
         await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits("0.01", 18), 0, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });    
         console.log(26)
 
@@ -480,5 +478,34 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
         expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("23.962068912085", 12));
         expect(balanceTreasuryAfterToken2).equals("0");
+
+        await token1.connect(owner).approve(router.address, amountADesired);
+        await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits("1000", 18), 0, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 }); 
+        console.log(27)
+
+        for(let i:number = 1; i < 25; i++) {
+            await token2.connect(owner).approve(router.address, amountBDesired);
+            await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits("1", 18), 0, [token2.address, token1.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });   
+            console.log(i);         
+        }
+
+        balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
+        balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);    
+
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1023.962051908089", 12));
+        expect(balanceTreasuryAfterToken2).equals(ethers.utils.parseUnits("23.954065916081", 12));
+
+        for(let i:number = 0; i <= 17; i++) {
+            let number = ethers.utils.parseEther("1").toString();
+            number = number.substring(0, number.length - i);
+            console.log(number)
+            await token1.connect(owner).approve(router.address, amountBDesired);
+            await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits(number, 0), 0, [token1.address, token2.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });   
+            console.log(`token1 ${i}`);     
+
+            await token2.connect(owner).approve(router.address, amountBDesired);
+            await router.connect(owner).swapExactTokensForTokens(ethers.utils.parseUnits(number, 0), 0, [token2.address, token1.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });   
+            console.log(`token2 ${i}`);         
+        }
     });
 }) 
