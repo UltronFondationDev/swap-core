@@ -31,7 +31,8 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     uint public price1CumulativeLast;
     uint public kLast; /// @dev reserve0 * reserve1, as of immediately after the most recent liquidity event
 
-    uint256 private transferedFee;
+    uint256 private token0Fee;
+    uint256 private token1Fee;
 
     uint private unlocked = 1;
     modifier lock() {
@@ -187,7 +188,7 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
 
-        require(balance0Adjusted.add(transferedFee).mul(balance1Adjusted.add(transferedFee)) >= uint(_reserve0 - transferedFee).mul(_reserve1  - transferedFee).mul(1000**2), 'UniswapV2: K');
+        require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0 - token0Fee).mul(_reserve1 - token1Fee).mul(1000**2), 'UniswapV2: K');
         }
         {   
         uint fee0 = amount0In.mul(10) / 10000;
@@ -201,23 +202,23 @@ contract UniswapV2Pair is UniswapV2ERC20 {
             || token0 == wethAddress || token1 == wethAddress)    
         {
             if(fee0 > 0) {
-                transferedFee += fee0;
+                token0Fee += fee0;
                 _safeTransfer(token0, treasuryAddress, fee0);
             }
             if(fee1 > 0) {
-                transferedFee += fee1;
+                token1Fee += fee1;
                 _safeTransfer(token1, treasuryAddress, fee1);
             }
         }
         else 
         {
             if(fee0 > 0) {
-                transferedFee += fee0;
+                token0Fee += fee0;
                 _swapWETHFee(wethAddress, treasuryAddress, fee0, token0);
 
             }
             if(fee1 > 0) {
-                transferedFee += fee1;
+                token1Fee += fee1;
                 _swapWETHFee(wethAddress, treasuryAddress, fee1, token1);
             }
         }

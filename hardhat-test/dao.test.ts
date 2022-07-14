@@ -30,7 +30,7 @@ describe("\x1b[33mMultisig test\x1b[0m\n", () => {
         [ owner, voterFirst, voterSecond, newVoterFirst, newVoterSecond ] = await ethers.getSigners();
 
         multisig = await (await new Multisig__factory(owner).deploy()).deployed();
-        console.log(`${beforeTest}Deployed bridge contract: ${colorBlue}${multisig.address}${colorReset}`);
+        console.log(`${beforeTest}Deployed multisig contract: ${colorBlue}${multisig.address}${colorReset}`);
     });
 
     it("Insert initial voter", async () => {
