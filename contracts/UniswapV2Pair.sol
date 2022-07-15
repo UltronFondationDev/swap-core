@@ -185,8 +185,8 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint fee1 = (balance1 - (_reserve1 - amount1Out)).mul(10) / 10000;
         require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
-        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
+        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(2));
+        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(2));
 
         require(balance0Adjusted.add(fee0).mul(balance1Adjusted.add(fee1)) >= uint(_reserve0 - fee0).mul(_reserve1 - fee1).mul(1000**2), 'UniswapV2: K');
         }
