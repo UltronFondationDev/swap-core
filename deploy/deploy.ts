@@ -12,6 +12,9 @@ task("deploy", "Deploy")
       else if(network.name === 'goerli') {
             weth = '0x6E983AAcb09bBd0aB422874c85CFf66B6864d75d';
       }
+      else if(network.name === 'ultron') {
+            weth = '0x3a4F06431457de873B588846d139EC0d86275d54';
+      }
       else {
             weth = await run("weth");
       }
