@@ -52,7 +52,10 @@ subtask("factory", "The contract UniswapV2Factory is deployed")
       .setAction(async (_, { ethers, network }) => {
             const signer = (await ethers.getSigners())[0];
             const feeToSetter = signer.address;
-            const treasuryAddress = signer.address;
+            let treasuryAddress = signer.address;
+            if(network.name === 'ultron_testnet') {
+                  treasuryAddress = '0x68CbD167CB4a15f2400b4B3913252B6D9D9d7613';
+            }
 
             const UniswapV2Factory_Factory = await ethers.getContractFactory("UniswapV2Factory", signer);
             const UniswapV2Factory = await (await UniswapV2Factory_Factory.deploy(feeToSetter, treasuryAddress)).deployed();
@@ -134,13 +137,13 @@ task("deploy-tokens", "deploying erc20 tokens")
 task("set-fee-to", "New FeeTo address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
-            const factoryAddress = "0xba36cE7f1be59f6eF5320B7fd2D4123e4b517e9B";
-            const daoAddress = "0xf50Dd0A78926f274854e9bFEb25cD94F155864eb";
+            const factoryAddress = "0x58e103F46b99014e1A28113C7434fDB05e84Fb2a";
+            const daoAddress = "0xdC0E1b34406548e25D0250439e7f0069E65C3259";
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
             const UniswapDAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
 
-            const feeToAddress = "0xa30396f2a233fdFFCC3C2b5445e24bfe01593b3b" // brewETH
+            const feeToAddress = "0x02504c5022A62f88224E5756EC62f9b00f52dF06" // brewETH
 
             await UniswapDAO.newFeeToChangeRequest(feeToAddress);
             await Helpers.delay(4000);
@@ -153,20 +156,26 @@ task("set-fee-to", "New FeeTo address")
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0xfaaa0F8Cc7748aCa871a3d771111AedB0AB1f1bB";
+          const routerAddress = "0x1abc0EfCBB786A6A254ef7B639e6AeD426eD9876";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
-          const tokenAddress0 = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
-          const tokenAddress1 = "0xa0A30a188269dBB6A446f180B21CeB5f169f9A20"
+          const usdc = '0xFac94031AA8f09e2858F93974178fd70F276EAD1';
+          const avax = '0xA066a85923dFB145B947EB4A74c6e0ad7CEAE193';
+          const dai = '0x9d40F4A04C737887a79902Caa7cE8003197D8B1C';
+          const wulx = '0xE2619ab40a445526B0AaDff944F994971d2EAc05';
+          const shib = '0x29263214978Db13A1b1cA0381f58Ca7b2054588c';
+
+          const tokenAddress0 = wulx;
+          const tokenAddress1 = shib;
 
           const token0 = await ethers.getContractAt("ERC20test", tokenAddress0, signer);
           const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);   
       
-          const amountADesired = ethers.utils.parseUnits("20", 18);
-          const amountBDesired = ethers.utils.parseUnits("20", 18);
+          const amountADesired = ethers.utils.parseUnits("100", 18);
+          const amountBDesired = ethers.utils.parseUnits("100000", 18);
           
-          const amountAMin = ethers.utils.parseUnits("20", 18);
-          const amountBMin = ethers.utils.parseUnits("20", 18);
+          const amountAMin = ethers.utils.parseUnits("100", 18);
+          const amountBMin = ethers.utils.parseUnits("100000", 18);
 
           await token0.approve(routerAddress, amountADesired);
           await token1.approve(routerAddress, amountBDesired);
@@ -177,7 +186,7 @@ task("add-liq", "adding liq for tokens")
 task("add-eth-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0xfaaa0F8Cc7748aCa871a3d771111AedB0AB1f1bB";
+          const routerAddress = "0x1abc0EfCBB786A6A254ef7B639e6AeD426eD9876";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress0 = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
@@ -202,7 +211,7 @@ task("add-eth-liq", "adding liq for tokens")
 task("swap", "swap token0 for token1")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0xfaaa0F8Cc7748aCa871a3d771111AedB0AB1f1bB";
+          const routerAddress = "0x1abc0EfCBB786A6A254ef7B639e6AeD426eD9876";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress1 = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
