@@ -175,7 +175,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     
         const balanceTreasuryAfterWeth = await weth.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
-        expect(balanceTreasuryAfterWeth).equals(ethers.utils.parseUnits("11.283851554663991", 15));
+        expect(balanceTreasuryAfterWeth).equals(ethers.utils.parseUnits("11.272545090180360", 15));
         expect(balanceTreasuryAfterToken1).equals("0");
     });
 
@@ -325,7 +325,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     
         const balanceTreasuryAfterWeth= await weth.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
-        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.319748719843741", 15));
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.318426326336884", 15));
         expect(balanceTreasuryAfterWeth).equals("0");
     });
 
@@ -349,7 +349,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
         
-        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.044801069876295", 15));
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.043754175016700", 15));
         expect(balanceTreasuryAfterToken2).equals("0");
     });
 
@@ -376,7 +376,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
     
-        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.044801069876295", 15));
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.043754175016700", 15));
         expect(balanceTreasuryAfterToken2).equals("0");
     });
 
@@ -403,7 +403,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
     
-        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.044801069876295", 15));
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.043754175016700", 15));
         expect(balanceTreasuryAfterToken2).equals("0");
     });
 
@@ -433,7 +433,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         const balanceTreasuryAfterToken1 = await token1.balanceOf(treasuryAccount.address);
         const balanceTreasuryAfterToken2 = await token2.balanceOf(treasuryAccount.address);
 
-        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.055798975874", 12));
+        expect(balanceTreasuryAfterToken1).equals(ethers.utils.parseUnits("1.054741061069", 12));
         expect(balanceTreasuryAfterToken2).equals("0");
     });
 
