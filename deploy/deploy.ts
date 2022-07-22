@@ -54,7 +54,7 @@ subtask("factory", "The contract UniswapV2Factory is deployed")
             const feeToSetter = signer.address;
             let treasuryAddress = signer.address;
             if(network.name === 'ultron_testnet') {
-                  treasuryAddress = '0x68CbD167CB4a15f2400b4B3913252B6D9D9d7613';
+                  treasuryAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
             }
 
             const UniswapV2Factory_Factory = await ethers.getContractFactory("UniswapV2Factory", signer);
