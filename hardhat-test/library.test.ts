@@ -78,7 +78,7 @@ describe("\x1b[33mUniswap Library test\x1b[0m\n", () => {
       });
 
       it('getAmountOut', async () => {
-        expect(await router.getAmountOut(ethers.utils.parseUnits("2", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).equals(ethers.utils.parseUnits("1.956939487823051884", 18));
+        expect(await router.getAmountOut(ethers.utils.parseUnits("2", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).equals(ethers.utils.parseUnits("1.955016961782065611", 18));
         
         await expect(router.getAmountOut(ethers.utils.parseUnits("0", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).revertedWith('UniswapV2Library: INSUFFICIENT_INPUT_AMOUNT');
         
@@ -88,7 +88,7 @@ describe("\x1b[33mUniswap Library test\x1b[0m\n", () => {
       });
 
       it('getAmountIn', async () => {
-        expect(await router.getAmountIn(ethers.utils.parseUnits("1", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).equals(ethers.utils.parseUnits("1.012125260622254611", 18));
+        expect(await router.getAmountIn(ethers.utils.parseUnits("1", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).equals(ethers.utils.parseUnits("1.013140431395195689", 18));
 
         await expect(router.getAmountIn(ethers.utils.parseUnits("0", 18), ethers.utils.parseUnits("100", 18), ethers.utils.parseUnits("100", 18))).revertedWith('UniswapV2Library: INSUFFICIENT_OUTPUT_AMOUNT');
 
@@ -101,14 +101,14 @@ describe("\x1b[33mUniswap Library test\x1b[0m\n", () => {
         await expect(router.getAmountsOut(ethers.utils.parseUnits("2", 18), [token1.address])).revertedWith('UniswapV2Library: INVALID_PATH');
 
         const path = [token1.address, token2.address];
-        expect(await router.getAmountsOut(ethers.utils.parseUnits("2", 18), path)).deep.equals([ethers.utils.parseUnits("2", 18), ethers.utils.parseUnits("1.848421988442732256", 18)])
+        expect(await router.getAmountsOut(ethers.utils.parseUnits("2", 18), path)).deep.equals([ethers.utils.parseUnits("2", 18), ethers.utils.parseUnits("1.846706675557531303", 18)])
       });
 
       it('getAmountsIn', async () => {
         await expect(router.getAmountsIn(ethers.utils.parseUnits("1", 18), [token1.address])).revertedWith('UniswapV2Library: INVALID_PATH');
 
         const path = [token1.address, token2.address];
-        expect(await router.getAmountsIn(ethers.utils.parseUnits("1", 18), path)).deep.equals([ethers.utils.parseUnits("1.043754175016700067", 18), ethers.utils.parseUnits("1", 18)]);
+        expect(await router.getAmountsIn(ethers.utils.parseUnits("1", 18), path)).deep.equals([ethers.utils.parseUnits("1.044801069876295554", 18), ethers.utils.parseUnits("1", 18)]);
       });
     
 });
