@@ -54,7 +54,11 @@ subtask("factory", "The contract UniswapV2Factory is deployed")
       .setAction(async (_, { ethers, network }) => {
             const signer = (await ethers.getSigners())[0];
             const feeToSetter = signer.address;
+
             let treasuryAddress = signer.address;
+            if(network.name === 'ultron') {
+                  treasuryAddress = '0xD60e1D7CCf2Bb8E2052079914c333c92D687B965';
+            }
             if(network.name === 'ultron_testnet') {
                   treasuryAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
             }
@@ -139,13 +143,13 @@ task("deploy-tokens", "deploying erc20 tokens")
 task("set-fee-to", "New FeeTo address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
-            const factoryAddress = "0xbaf935ad5af4d249438f786316b93D77ca90aDb7";
-            const daoAddress = "0xB57d8553334f4360dBad4975669C6E3cBf1317Ed";
+            const factoryAddress = "0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7";
+            const daoAddress = "0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5";
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
             const UniswapDAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
 
-            const feeToAddress = "0xc285295c59e07e580099F98c447b644725e66c87" // brewETH
+            const feeToAddress = "0xD98878B704431d566bdB47c6aAA34E4deAFC5A52" // brewUlx
 
             await UniswapDAO.newFeeToChangeRequest(feeToAddress);
             await Helpers.delay(4000);
@@ -155,11 +159,50 @@ task("set-fee-to", "New FeeTo address")
             console.info(await UniswapV2Factory.feeTo());
       })
 
+task("create-pair", "New pair address")
+      .setAction(async (_, { ethers }) => {
+            const signer = (await ethers.getSigners())[0];
+
+            const factoryAddress = "0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7";
+            const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
+
+            const wbtc  = '0xd2b86a80A8f30b83843e247A50eCDc8D843D87dD';
+            const weth  = '0x2318Bf5809a72AaBAdd15a3453A18e50Bbd651Cd';
+            const bnb   = '0x169ac560852ed79af3D97A8977DCf2EBA54A0488';
+            const avax  = '0x6FE94412953D373Ef464b85637218EFA9EAB8e97';
+            const busd  = '0xc7cAc85C1779d2B8ADA94EFfff49A4754865e2E4';
+            const shib  = '0xb5Bb1911cf6C83C1a6E439951C40C2949B0d907f';
+            const matic = '0x6094a1e3919b302E236B447f45c4eb2DeCE9D9F4';
+            const ftm   = '0xE8Ef8A6FE387C2D10951a63ca8f37dB6B8fA02C1';
+            const dai   = '0x045F0f2DE758743c84b756B1Fca735a0dDf0b8f4';
+            const link  = '0xc8Fb7999d62072E12fE8f3EDcd7821204FCa0344';
+            const usdt  = '0x97FDd294024f50c388e39e73F1705a35cfE87656';
+            const usdc  = '0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4';
+            const wulx  = '0x3a4F06431457de873B588846d139EC0d86275d54';
+
+            const token0 = usdt;
+            const token1 = usdc;
+
+            // usdt  - wulx = 0x938ba76720683bE80C1d3dEFfa27b9153E48c5e9
+            // usdc  - wulx = 0x6858B9099a4C7Ac4E7Ec1dF7F637169C598069f3
+            // bnb   - wulx = 0xf660c223f4255bc31bd0e8158d1722d5E9bF13B9
+            // matic - wulx = 0xb598208c67281aA8b3EdCc1F33Aa208B3E23f34C
+            // ftm   - wulx = 0x9F532172FbDC733b97f8Ba28b78E76C6fc2B07D9
+            // weth  - wulx = 0x166559b5965cEFD8d3D999ae068ea8c481702Dc5
+            // wbtc  - wulx = 0xa0fc77ebeD805C027671BDDD25869B48C81ffea0
+            // avax  - wulx = 0x60960f50EfCd231d4796FBF994Aa38f4a06f3588
+            // usdt  - usdc = 0x5910306486d3adF0f2ec3146A8C38e6C1F3404b7
+
+            await UniswapV2Factory.createPair(token0, token1);
+            await Helpers.delay(4000);
+            console.info(await UniswapV2Factory.getPair(token0, token1));
+      })
+
 task("add-voter", "Adds voter")      
     .setAction(async (_, { ethers, network }) => {
         const signer = (await ethers.getSigners())[0];
 
-        const daoAddress = "0xB57d8553334f4360dBad4975669C6E3cBf1317Ed";
+        const daoAddress = "0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5";
         const DAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
 
         const voterAddress = "0x4CE535D6E2D47690e33CA646972807BeB264dFBf";
@@ -171,13 +214,14 @@ task("add-voter", "Adds voter")
         let iterator = +(await DAO.getActiveVotersCount());
         console.info(iterator);
         await DAO.votersRequestConclusion(iterator);
+        await Helpers.delay(4000);
         console.info(`IsVoter [${voterAddress}] = ${await DAO.getVoterStatusByAddress(voterAddress)}`);
     });
 
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x30E550582ff73B0eC48e09E5D03b8b426058C646";
+          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const usdc = '0xFac94031AA8f09e2858F93974178fd70F276EAD1';
@@ -207,7 +251,7 @@ task("add-liq", "adding liq for tokens")
 task("add-eth-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x30E550582ff73B0eC48e09E5D03b8b426058C646";
+          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress0 = "0x0ec8bD3fb03dDb651eD654B941E8a3B7A4c7170E";
@@ -232,7 +276,7 @@ task("add-eth-liq", "adding liq for tokens")
 task("swap", "swap token0 for token1")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x30E550582ff73B0eC48e09E5D03b8b426058C646";
+          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
           const tokenAddress1 = "0x9d40F4A04C737887a79902Caa7cE8003197D8B1C";
