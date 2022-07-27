@@ -438,11 +438,11 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
     });
 
     it("swapExactTokensForTokens \n", async () => {    
-        const amountADesired = ethers.utils.parseUnits("1000", 18);
-        const amountBDesired = ethers.utils.parseUnits("1000", 18);
+        const amountADesired = ethers.utils.parseUnits("620549", 18);
+        const amountBDesired = ethers.utils.parseUnits("375439", 18);
         
-        const amountAMin = ethers.utils.parseUnits("9000", 18);
-        const amountBMin = ethers.utils.parseUnits("550", 18);
+        const amountAMin = ethers.utils.parseUnits("620549", 18);
+        const amountBMin = ethers.utils.parseUnits("375439", 18);
 
         await token1.connect(owner).approve(router.address, amountADesired);
         await token2.connect(owner).approve(router.address, amountBDesired);
@@ -509,7 +509,7 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
             console.log(`token2 ${i}`);         
         }
 
-        for(let i:number = 0; i <= 19; i++) {
+        for(let i:number = 0; i <= 16; i++) {
             let number = ethers.utils.parseEther("100").toString();
             number = number.substring(0, number.length - i);
             console.log(number)
@@ -520,6 +520,18 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
 
             await token2.connect(owner).approve(router.address, amountBDesired);
             await router.connect(owner).swapExactTokensForETH(ethers.utils.parseUnits(number, 0), 0, [token2.address, weth.address], owner.address, Date.now() + 20, { gasLimit: 3045000 });   
+            console.log(`token2 ${i}`);         
+        }
+
+        for(let i:number = 0; i <= 19; i++) {
+            let number = ethers.utils.parseEther("100").toString();
+            number = number.substring(0, number.length - i);
+            console.log(number)
+
+            await router.connect(owner).swapExactETHForTokens(0, [weth.address, token1.address], owner.address, Date.now() + 20, { value: ethers.utils.parseUnits(number, 0), gasLimit: 3045000 });   
+            console.log(`token1 ${i}`);     
+
+            await router.connect(owner).swapExactETHForTokens( 0, [weth.address, token2.address], owner.address, Date.now() + 20, { value: ethers.utils.parseUnits(number, 0), gasLimit: 3045000 });   
             console.log(`token2 ${i}`);         
         }
 
