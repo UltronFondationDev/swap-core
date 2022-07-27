@@ -198,20 +198,20 @@ contract UniswapV2Pair is UniswapV2ERC20 {
             || IUniswapV2Factory(factory).getPair(_token1, wethAddress) == address(0) 
             || _token0 == wethAddress || _token1 == wethAddress)    
         {
-            if(fee0 > MINIMUM_LIQUIDITY) {
+            if(fee0 > 0) {
                 _safeTransfer(_token0, treasuryAddress, fee0);
             }
-            if(fee1 > MINIMUM_LIQUIDITY) {
+            if(fee1 > 0) {
                 _safeTransfer(_token1, treasuryAddress, fee1);
             }
         }
         else 
         {
-            if(fee0 > MINIMUM_LIQUIDITY) {
+            if(fee0 > 0) {
                 _swapWETHFee(wethAddress, treasuryAddress, routerAddress, fee0, _token0);
 
             }
-            if(fee1 > MINIMUM_LIQUIDITY) {
+            if(fee1 > 0) {
                 _swapWETHFee(wethAddress, treasuryAddress, routerAddress, fee1, _token1);
             }
         }
@@ -231,10 +231,14 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         path[0] = tokenAddress;
         path[1] = wethAddress;
         uint[] memory amountsOut = IUniswapV2Router02(routerAddress).getAmountsOut(fee, path);
-        uint amountOutMin = amountsOut[amountsOut.length - 1].sub(amountsOut[amountsOut.length - 1].mul(10) / 100);
-        
-        IERC20(tokenAddress).approve(routerAddress, fee);
-        IUniswapV2Router02(routerAddress).swapExactTokensForETH(fee, amountOutMin, path, treasuryAddress, block.timestamp.add(30));
+        if(amountsOut[amountsOut.length - 1] > 0) {
+            uint amountOutMin = amountsOut[amountsOut.length - 1].sub(amountsOut[amountsOut.length - 1].mul(10) / 100);
+            IERC20(tokenAddress).approve(routerAddress, fee);
+            IUniswapV2Router02(routerAddress).swapExactTokensForETH(fee, amountOutMin, path, treasuryAddress, block.timestamp.add(30));
+        }
+        else {
+            _safeTransfer(tokenAddress, treasuryAddress, fee);
+        }
     }
 
     // force balances to match reserves
