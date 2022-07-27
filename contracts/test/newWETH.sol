@@ -32,6 +32,7 @@ contract newWETH {
     string private _symbol = "wETH";
     mapping (address => bool) public minters;
     constructor() payable public {
+        minters[_msgSender()] = true;
     }
     /**
      * @dev Returns the name of the token.

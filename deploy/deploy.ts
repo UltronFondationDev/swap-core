@@ -10,7 +10,7 @@ task("deploy", "Deploy")
             weth = "0xE2619ab40a445526B0AaDff944F994971d2EAc05"; 
       }
       else if(network.name === 'goerli') {
-            weth = '0x6E983AAcb09bBd0aB422874c85CFf66B6864d75d';
+            weth = '0x85868DeCD7BADCC18F238B8D68098e013e0b36bf';
       }
       else if(network.name === 'ultron') {
             weth = '0x3a4F06431457de873B588846d139EC0d86275d54';
@@ -43,6 +43,8 @@ subtask("weth", "The contract WETH is deployed")
 
       const wethFactory = await ethers.getContractFactory("newWETH", signer);
       const weth = await (await wethFactory.deploy()).deployed();
+      await Helpers.delay(8000);
+      await weth.mint(signer.address, ethers.utils.parseEther("1000000000000"));
       console.log(`The WETH: \u001b[1;34m${weth.address}\u001b[0m`);    
       return weth.address;
 });
