@@ -60,7 +60,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     ganache_ultron: {
-      url: `http://127.0.0.1:8545`,
+      url: `http://ganache_ultron:8545`,
       chainId: 1000,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
