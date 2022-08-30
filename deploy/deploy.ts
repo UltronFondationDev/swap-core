@@ -1,23 +1,40 @@
 import { subtask, task, types } from "hardhat/config";
 import * as Helpers from "./helpers";
 
+
+require('dotenv').config();
+
+
+const fs = require('fs');
+
+const filename = process.env.DIRNAME + "/deployed_storage.json";
+
+let deployed_storage: any = {};
+try {
+  deployed_storage = JSON.parse(fs.readFileSync(filename).toString().trim());
+  console.log(deployed_storage);
+} catch (err) {
+  console.log("No ", filename, ' Let\'s deploy contracts');
+}
+
+
 task("deploy", "Deploy")
   .setAction(async (taskArgs, {run, ethers, network}) => {
       const uniswapV2Factory = await run("factory");
 
       let weth;
-      if(network.name === 'ultron_testnet') {
-            weth = "0xE2619ab40a445526B0AaDff944F994971d2EAc05"; 
+      if(network.name === 'ganache_ultron') {
+            weth = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
       }
-      else if(network.name === 'goerli') {
-            weth = '0x85868DeCD7BADCC18F238B8D68098e013e0b36bf';
-      }
-      else if(network.name === 'ultron') {
-            weth = '0x3a4F06431457de873B588846d139EC0d86275d54';
-      }
-      else {
-            weth = await run("weth");
-      }
+      // else if(network.name === 'goerli') {
+      //       weth = '0x85868DeCD7BADCC18F238B8D68098e013e0b36bf';
+      // }
+      // else if(network.name === 'ultron') {
+      //       weth = '0x3a4F06431457de873B588846d139EC0d86275d54';
+      // }
+      // else {
+      //       weth = await run("weth");
+      // }
 
       const dao = await run("dao", { factory: uniswapV2Factory });
 
@@ -28,7 +45,12 @@ task("deploy", "Deploy")
       const setRouter = await run("set-router", { factory: uniswapV2Factory, dao: dao, router: uniswapV2Router });
 
       console.log("=".repeat(50));
-      Helpers.logDeploy('weth',weth);
+
+
+      deployed_storage["UniswapV2Factory"] = uniswapV2Factory;
+      deployed_storage["UniswapDAO"] = dao;
+      deployed_storage["UniswapV2Router02"] = uniswapV2Router;
+      fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       Helpers.logDeploy('UniswapV2Factory',uniswapV2Factory);
       Helpers.logDeploy('UniswapDAO',dao);
       Helpers.logDeploy('UniswapV2Router02', uniswapV2Router);
@@ -56,12 +78,12 @@ subtask("factory", "The contract UniswapV2Factory is deployed")
             const feeToSetter = signer.address;
 
             let treasuryAddress = signer.address;
-            if(network.name === 'ultron') {
-                  treasuryAddress = '0xD60e1D7CCf2Bb8E2052079914c333c92D687B965';
-            }
-            if(network.name === 'ultron_testnet') {
-                  treasuryAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
-            }
+            // if(network.name === 'ultron') {
+            //       treasuryAddress = '0xD60e1D7CCf2Bb8E2052079914c333c92D687B965';
+            // }
+            // if(network.name === 'ultron_testnet') {
+            //       treasuryAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+            // }
 
             const UniswapV2Factory_Factory = await ethers.getContractFactory("UniswapV2Factory", signer);
             const UniswapV2Factory = await (await UniswapV2Factory_Factory.deploy(feeToSetter, treasuryAddress)).deployed();
