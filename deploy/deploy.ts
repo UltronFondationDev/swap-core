@@ -188,36 +188,40 @@ task("create-pair", "New pair address")
             const factoryAddress = "0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7";
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
 
-            const wbtc  = '0xd2b86a80A8f30b83843e247A50eCDc8D843D87dD';
-            const weth  = '0x2318Bf5809a72AaBAdd15a3453A18e50Bbd651Cd';
-            const bnb   = '0x169ac560852ed79af3D97A8977DCf2EBA54A0488';
-            const avax  = '0x6FE94412953D373Ef464b85637218EFA9EAB8e97';
-            const busd  = '0xc7cAc85C1779d2B8ADA94EFfff49A4754865e2E4';
-            const shib  = '0xb5Bb1911cf6C83C1a6E439951C40C2949B0d907f';
-            const matic = '0x6094a1e3919b302E236B447f45c4eb2DeCE9D9F4';
-            const ftm   = '0xE8Ef8A6FE387C2D10951a63ca8f37dB6B8fA02C1';
-            const dai   = '0x045F0f2DE758743c84b756B1Fca735a0dDf0b8f4';
-            const link  = '0xc8Fb7999d62072E12fE8f3EDcd7821204FCa0344';
-            const usdt  = '0x97FDd294024f50c388e39e73F1705a35cfE87656';
-            const usdc  = '0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4';
-            const wulx  = '0x3a4F06431457de873B588846d139EC0d86275d54';
+            const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];;
+            const weth  = JSON.parse(fs.readFileSync(filename).toString().trim())["WETH"];;
+            const bnb   = JSON.parse(fs.readFileSync(filename).toString().trim())["bnb"];;
+            const avax  = JSON.parse(fs.readFileSync(filename).toString().trim())["avax"];;
+            const busd  = JSON.parse(fs.readFileSync(filename).toString().trim())["bUSD"];;
+            const shib  = JSON.parse(fs.readFileSync(filename).toString().trim())["shib"];;
+            const matic = JSON.parse(fs.readFileSync(filename).toString().trim())["matic"];;
+            const ftm   = JSON.parse(fs.readFileSync(filename).toString().trim())["ftm"];;
+            const dai   = JSON.parse(fs.readFileSync(filename).toString().trim())["dai"];;
+            const link  = JSON.parse(fs.readFileSync(filename).toString().trim())["link"];;
+            const usdt  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDT"];;
+            const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];;
+            const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];;
 
-            const token0 = usdt;
-            const token1 = usdc;
+            await UniswapV2Factory.createPair(usdt, wulx);
+            await UniswapV2Factory.createPair(usdc, wulx);
+            await UniswapV2Factory.createPair(bnb, wulx);
+            await UniswapV2Factory.createPair(matic, wulx);
+            await UniswapV2Factory.createPair(ftm, wulx);
+            await UniswapV2Factory.createPair(weth, wulx);
+            await UniswapV2Factory.createPair(wbtc, wulx);
+            await UniswapV2Factory.createPair(avax, wulx);
+            await UniswapV2Factory.createPair(usdt, usdc);
 
-            // usdt  - wulx = 0x938ba76720683bE80C1d3dEFfa27b9153E48c5e9
-            // usdc  - wulx = 0x6858B9099a4C7Ac4E7Ec1dF7F637169C598069f3
-            // bnb   - wulx = 0xf660c223f4255bc31bd0e8158d1722d5E9bF13B9
-            // matic - wulx = 0xb598208c67281aA8b3EdCc1F33Aa208B3E23f34C
-            // ftm   - wulx = 0x9F532172FbDC733b97f8Ba28b78E76C6fc2B07D9
-            // weth  - wulx = 0x166559b5965cEFD8d3D999ae068ea8c481702Dc5
-            // wbtc  - wulx = 0xa0fc77ebeD805C027671BDDD25869B48C81ffea0
-            // avax  - wulx = 0x60960f50EfCd231d4796FBF994Aa38f4a06f3588
-            // usdt  - usdc = 0x5910306486d3adF0f2ec3146A8C38e6C1F3404b7
-
-            await UniswapV2Factory.createPair(token0, token1);
             await Helpers.delay(4000);
-            console.info(await UniswapV2Factory.getPair(token0, token1));
+
+            console.info(await UniswapV2Factory.getPair(usdt, wulx));
+            console.info(await UniswapV2Factory.getPair(usdc, wulx));
+            console.info(await UniswapV2Factory.getPair(bnb, wulx));
+            console.info(await UniswapV2Factory.getPair(matic, wulx));
+            console.info(await UniswapV2Factory.getPair(ftm, wulx));
+            console.info(await UniswapV2Factory.getPair(wbtc, wulx));
+            console.info(await UniswapV2Factory.getPair(avax, wulx));
+            console.info(await UniswapV2Factory.getPair(usdt, usdc));
       })
 
 task("add-voter", "Adds voter")      
