@@ -112,7 +112,7 @@ subtask("set-dao-initial", "Setting UniswapDAO Address in UniswapV2Factory after
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", taskArgs.factory, signer);
             await UniswapV2Factory.setDAOContractInitial(taskArgs.dao);
-            await Helpers.delay(4000);
+            
             
             console.info(await UniswapV2Factory.daoAddress());
             return true;
@@ -141,11 +141,11 @@ subtask("set-router", "Setting UniswapV2Router Address in UniswapV2Factory after
 
             const UniswapDAO = await ethers.getContractAt("UniswapDAO", taskArgs.dao, signer);
             await UniswapDAO.newRouterChangeRequest(taskArgs.router);
-            await Helpers.delay(4000);
+            
 
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", taskArgs.factory, signer);
             await UniswapV2Factory.setRouterAddress(1);
-            await Helpers.delay(4000);
+            
             
             console.info(await UniswapV2Factory.routerAddress());
             return true;
@@ -174,9 +174,9 @@ task("set-fee-to", "New FeeTo address")
             const feeToAddress = "0xD98878B704431d566bdB47c6aAA34E4deAFC5A52" // brewUlx
 
             await UniswapDAO.newFeeToChangeRequest(feeToAddress);
-            await Helpers.delay(4000);
+            
             await UniswapV2Factory.setFeeTo(1);
-            await Helpers.delay(4000);
+            
 
             console.info(await UniswapV2Factory.feeTo());
       })
@@ -188,40 +188,43 @@ task("create-pair", "New pair address")
             const factoryAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Factory"];
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
 
-            const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];;
-            const weth  = JSON.parse(fs.readFileSync(filename).toString().trim())["WETH"];;
-            const bnb   = JSON.parse(fs.readFileSync(filename).toString().trim())["bnb"];;
-            const avax  = JSON.parse(fs.readFileSync(filename).toString().trim())["avax"];;
-            const busd  = JSON.parse(fs.readFileSync(filename).toString().trim())["bUSD"];;
-            const shib  = JSON.parse(fs.readFileSync(filename).toString().trim())["shib"];;
-            const matic = JSON.parse(fs.readFileSync(filename).toString().trim())["matic"];;
-            const ftm   = JSON.parse(fs.readFileSync(filename).toString().trim())["ftm"];;
-            const dai   = JSON.parse(fs.readFileSync(filename).toString().trim())["dai"];;
-            const link  = JSON.parse(fs.readFileSync(filename).toString().trim())["link"];;
-            const usdt  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDT"];;
-            const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];;
-            const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];;
+            const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];
+            const weth  = JSON.parse(fs.readFileSync(filename).toString().trim())["wETH"];
+            const bnb   = JSON.parse(fs.readFileSync(filename).toString().trim())["bnb"];
+            const avax  = JSON.parse(fs.readFileSync(filename).toString().trim())["avax"];
+            const matic = JSON.parse(fs.readFileSync(filename).toString().trim())["matic"];
+            const ftm   = JSON.parse(fs.readFileSync(filename).toString().trim())["ftm"];
+            const usdt  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDT"];
+            const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];
+            const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
 
-            await UniswapV2Factory.createPair(usdt, wulx);
+            await UniswapV2Factory.createPair(usdt, wulx)
+            deployed_storage["usdt_wulx"] = await UniswapV2Factory.getPair(usdt, wulx);
+
             await UniswapV2Factory.createPair(usdc, wulx);
+            deployed_storage["usdc_wulx"] = await UniswapV2Factory.getPair(usdc, wulx);
+
             await UniswapV2Factory.createPair(bnb, wulx);
+            deployed_storage["bnb_wulx"] = await UniswapV2Factory.getPair(bnb, wulx);
+
             await UniswapV2Factory.createPair(matic, wulx);
+            deployed_storage["matic_wulx"] = await UniswapV2Factory.getPair(matic, wulx);
+
             await UniswapV2Factory.createPair(ftm, wulx);
+            deployed_storage["ftm_wulx"] = await UniswapV2Factory.getPair(ftm, wulx);
+
             await UniswapV2Factory.createPair(weth, wulx);
+            deployed_storage["weth_wulx"] = await UniswapV2Factory.getPair(weth, wulx);
+
             await UniswapV2Factory.createPair(wbtc, wulx);
+            deployed_storage["wbtc_wulx"] = await UniswapV2Factory.getPair(wbtc, wulx);
+            
             await UniswapV2Factory.createPair(avax, wulx);
+            deployed_storage["avax_wulx"] = await UniswapV2Factory.getPair(avax, wulx);
+
             await UniswapV2Factory.createPair(usdt, usdc);
-
-            await Helpers.delay(4000);
-
-            console.info(await UniswapV2Factory.getPair(usdt, wulx));
-            console.info(await UniswapV2Factory.getPair(usdc, wulx));
-            console.info(await UniswapV2Factory.getPair(bnb, wulx));
-            console.info(await UniswapV2Factory.getPair(matic, wulx));
-            console.info(await UniswapV2Factory.getPair(ftm, wulx));
-            console.info(await UniswapV2Factory.getPair(wbtc, wulx));
-            console.info(await UniswapV2Factory.getPair(avax, wulx));
-            console.info(await UniswapV2Factory.getPair(usdt, usdc));
+            deployed_storage["usdt_usdc"] = await UniswapV2Factory.getPair(usdt, usdc);
+            fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
 
 task("add-voter", "Adds voter")      
@@ -235,12 +238,12 @@ task("add-voter", "Adds voter")
         
         console.info(await DAO.getActiveVotersCount());      
         await DAO.newVoterRequest(true, voterAddress);
-        await Helpers.delay(4000);
+        
 
         let iterator = +(await DAO.getActiveVotersCount());
         console.info(iterator);
         await DAO.votersRequestConclusion(iterator);
-        await Helpers.delay(4000);
+        
         console.info(`IsVoter [${voterAddress}] = ${await DAO.getVoterStatusByAddress(voterAddress)}`);
     });
 
