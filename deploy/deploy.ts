@@ -185,7 +185,7 @@ task("create-pair", "New pair address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
 
-            const factoryAddress = "0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7";
+            const factoryAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Factory"];
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
 
             const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];;
