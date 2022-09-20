@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 
-const filename = process.env.DIRNAME + "/deployed_storage.json";
+const filename = "./deployed_storage.json";
 
 let deployed_storage: any = {};
 try {
@@ -227,54 +227,84 @@ task("create-pair", "New pair address")
             fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
 
-task("add-voter", "Adds voter")      
-    .setAction(async (_, { ethers, network }) => {
-        const signer = (await ethers.getSigners())[0];
-
-        const daoAddress = "0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5";
-        const DAO = await ethers.getContractAt("UniswapDAO", daoAddress, signer);
-
-        const voterAddress = "0x4CE535D6E2D47690e33CA646972807BeB264dFBf";
-        
-        console.info(await DAO.getActiveVotersCount());      
-        await DAO.newVoterRequest(true, voterAddress);
-        
-
-        let iterator = +(await DAO.getActiveVotersCount());
-        console.info(iterator);
-        await DAO.votersRequestConclusion(iterator);
-        
-        console.info(`IsVoter [${voterAddress}] = ${await DAO.getVoterStatusByAddress(voterAddress)}`);
-    });
 
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
-          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
+          const routerAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Router02"];
+          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer);
 
-          const usdc = '0xFac94031AA8f09e2858F93974178fd70F276EAD1';
-          const avax = '0xA066a85923dFB145B947EB4A74c6e0ad7CEAE193';
-          const dai = '0x9d40F4A04C737887a79902Caa7cE8003197D8B1C';
-          const wulx = '0xE2619ab40a445526B0AaDff944F994971d2EAc05';
-          const shib = '0x29263214978Db13A1b1cA0381f58Ca7b2054588c';
+          const wbtcAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];
+          const wethAddress  = JSON.parse(fs.readFileSync(filename).toString().trim())["wETH"];
+          const bnbAddress   = JSON.parse(fs.readFileSync(filename).toString().trim())["bnb"];
+          const avaxAddress  = JSON.parse(fs.readFileSync(filename).toString().trim())["avax"];
+          const maticAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["matic"];
+          const ftmAddress   = JSON.parse(fs.readFileSync(filename).toString().trim())["ftm"];
+          const usdtAddress  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDT"];
+          const usdcAddress  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];
+          const wulxAddress  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
 
-          const tokenAddress0 = wulx;
-          const tokenAddress1 = shib;
 
-          const token0 = await ethers.getContractAt("ERC20test", tokenAddress0, signer);
-          const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);   
+          const wbtc  = await ethers.getContractAt("ERC20test", wbtcAddress, signer);
+          const weth  = await ethers.getContractAt("ERC20test", wethAddress, signer);
+          const bnb  = await ethers.getContractAt("ERC20test", bnbAddress, signer);
+          const avax  = await ethers.getContractAt("ERC20test", avaxAddress, signer);
+          const matic  = await ethers.getContractAt("ERC20test", maticAddress, signer);
+          const ftm  = await ethers.getContractAt("ERC20test", ftmAddress, signer);
+          const usdt  = await ethers.getContractAt("ERC20test", usdtAddress, signer);
+          const usdc  = await ethers.getContractAt("ERC20test", usdcAddress, signer);
+          const wulx = await ethers.getContractAt("WETH", wulxAddress, signer);
       
-          const amountADesired = ethers.utils.parseUnits("100", 18);
-          const amountBDesired = ethers.utils.parseUnits("100000", 18);
+          const amountADesired = ethers.utils.parseUnits("10000", 18);
+          const amountBDesired = ethers.utils.parseUnits("1000000", 18);
           
-          const amountAMin = ethers.utils.parseUnits("100", 18);
-          const amountBMin = ethers.utils.parseUnits("100000", 18);
+          const amountAMin = ethers.utils.parseUnits("10000", 18);
+          const amountBMin = ethers.utils.parseUnits("1000000", 18);
 
-          await token0.approve(routerAddress, amountADesired);
-          await token1.approve(routerAddress, amountBDesired);
+          const amountADesiredStable = ethers.utils.parseUnits("10000", 6);
+          const amountBDesiredStable = ethers.utils.parseUnits("10000", 6);
 
-          await UniswapV2Router.addLiquidity(tokenAddress0, tokenAddress1, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+          const amountAMinStable = ethers.utils.parseUnits("10000", 6);
+          const amountBMinStable = ethers.utils.parseUnits("10000", 6);
+
+
+          await wbtc.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(wbtcAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now(), { gasLimit: 3100000 });
+
+          await weth.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(wethAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await bnb.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(bnbAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await avax.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(avaxAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await matic.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(maticAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await ftm.approve(routerAddress, amountADesired);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(ftmAddress, wulxAddress, amountADesired, amountBDesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+
+          await usdt.approve(routerAddress, amountADesiredStable);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(usdtAddress, wulxAddress, amountADesiredStable, amountBDesired, amountAMinStable, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await usdc.approve(routerAddress, amountADesiredStable);
+          await wulx.approve(routerAddress, amountBDesired);
+          await UniswapV2Router.addLiquidity(usdcAddress, wulxAddress, amountADesiredStable, amountBDesired, amountAMinStable, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000 });
+
+          await usdt.approve(routerAddress, amountADesiredStable);
+          await usdc.approve(routerAddress, amountBDesiredStable);
+          await UniswapV2Router.addLiquidity(usdtAddress, usdcAddress, amountADesiredStable, amountBDesiredStable, amountAMinStable, amountBMinStable, signer.address, Date.now(), { gasLimit: 3100000 });
+
       });
 
 task("add-eth-liq", "adding liq for tokens")
@@ -305,16 +335,16 @@ task("add-eth-liq", "adding liq for tokens")
 task("swap", "swap token0 for token1")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
+          const routerAddress = "0x180Cfb5D6783A9EA6a0aad101af4BD927ea67913";
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
 
-          const tokenAddress1 = "0x9d40F4A04C737887a79902Caa7cE8003197D8B1C";
-          const tokenAddress2 = "0xA066a85923dFB145B947EB4A74c6e0ad7CEAE193"
+          const tokenAddress1 = "0xce6e0156A12D325AA208C02f0CA6aB9534De5DE9";
+          const tokenAddress2 = "0x654F9C2b78DdC056b3453897B58417Ac1dC36e00"
 
           const token1 = await ethers.getContractAt("ERC20test", tokenAddress1, signer);
           const token2 = await ethers.getContractAt("ERC20test", tokenAddress2, signer);
 
-          const amountADesired = ethers.utils.parseUnits("6000", 18);
+          const amountADesired = ethers.utils.parseUnits("1000", 18);
 
           await token1.approve(UniswapV2Router.address, amountADesired);
           await UniswapV2Router.swapExactTokensForTokens(amountADesired, 0, [token1.address, token2.address], signer.address, Date.now() + 20, { gasLimit: 3045000 });    
