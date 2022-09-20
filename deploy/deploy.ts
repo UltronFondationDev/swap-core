@@ -12,9 +12,7 @@ const filename = process.env.DIRNAME + "/deployed_storage.json";
 let deployed_storage: any = {};
 try {
   deployed_storage = JSON.parse(fs.readFileSync(filename).toString().trim());
-  console.log(deployed_storage);
 } catch (err) {
-  console.log("No ", filename, ' Let\'s deploy contracts');
 }
 
 
