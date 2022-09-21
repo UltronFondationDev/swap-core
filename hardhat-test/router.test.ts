@@ -46,6 +46,9 @@ describe("\x1b[33mUniswap test\x1b[0m\n", () => {
         await dao.connect(owner).newRouterChangeRequest(router.address);
         await factory.connect(owner).setRouterAddress(1);
 
+        await dao.connect(owner).newFeeToChangeRequest(treasuryAddress);
+        await factory.connect(owner).setFeeTo(1);
+
         const totalSupply = ethers.utils.parseUnits("1000000000000", 18);
         token1 = await (await new ERC20test__factory(owner).deploy(totalSupply, "MyToken1", "MYT1")).deployed();
         token2 = await (await new ERC20test__factory(owner).deploy(totalSupply, "MyToken2", "MYT2")).deployed();

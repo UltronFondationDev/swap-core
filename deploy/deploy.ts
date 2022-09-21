@@ -273,7 +273,7 @@ task("add-eth-liq", "adding liq for tokens")
           await UniswapV2Router.addLiquidityETH(tokenAddress1, amountADesired, amountAMin, amountBMin, signer.address, Date.now() + 20, { gasLimit: 3100000, value: amountBDesired });
       });
 
-task("swap", "swap token0 for token1")
+task("swap-tokens", "swap token0 for token1")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
           const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
@@ -289,4 +289,26 @@ task("swap", "swap token0 for token1")
 
           await token1.approve(UniswapV2Router.address, amountADesired);
           await UniswapV2Router.swapExactTokensForTokens(amountADesired, 0, [token1.address, token2.address], signer.address, Date.now() + 20, { gasLimit: 3045000 });    
-      });
+});
+
+task("swap-eth", "swap eth for token")
+      .setAction(async (_, { ethers }) => {
+          const signer = (await ethers.getSigners())[0];
+          const routerAddress = "0x2149Ca7a3e4098d6C4390444769DA671b4dC3001";
+          const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer); 
+      
+          const wethAddress = "0x3a4F06431457de873B588846d139EC0d86275d54";
+          const tokenAddress = "0x97fdd294024f50c388e39e73f1705a35cfe87656"
+      
+          const weth = await ethers.getContractAt("ERC20test", wethAddress, signer);
+          const token = await ethers.getContractAt("ERC20test", tokenAddress, signer);
+      
+          const path = [weth.address, token.address];
+          const to = '0x3E1c3c5B2b1740d5DC664f58A51166B8538bF03E'; // 0x97fdd294024f50c388e39e73f1705a35cfe87656 0x3c4E0FdeD74876295Ca36F62da289F69E3929cc4
+          const amountADesired = ethers.utils.parseUnits("4134.114", 6);
+      
+          const getAmountsIn = await UniswapV2Router.getAmountsIn(amountADesired, path);
+          console.log(getAmountsIn)
+          await weth.approve(UniswapV2Router.address, amountADesired);
+          await UniswapV2Router.swapETHForExactTokens(amountADesired, path, to, Date.now() + 20, { gasLimit: 3045000 });          
+});
