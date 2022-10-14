@@ -196,32 +196,32 @@ task("create-pair", "New pair address")
             const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];
             const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
 
-            await UniswapV2Factory.createPair(usdt, wulx)
-            deployed_storage["usdt_wulx"] = await UniswapV2Factory.getPair(usdt, wulx);
+            await UniswapV2Factory.createPair(wulx, usdt)
+            deployed_storage["usdt_wulx"] = await UniswapV2Factory.getPair(wulx, usdt);
 
-            await UniswapV2Factory.createPair(usdc, wulx);
-            deployed_storage["usdc_wulx"] = await UniswapV2Factory.getPair(usdc, wulx);
+            await UniswapV2Factory.createPair(wulx, usdc);
+            deployed_storage["usdc_wulx"] = await UniswapV2Factory.getPair(wulx, usdc);
 
             await UniswapV2Factory.createPair(bnb, wulx);
             deployed_storage["bnb_wulx"] = await UniswapV2Factory.getPair(bnb, wulx);
 
-            await UniswapV2Factory.createPair(matic, wulx);
-            deployed_storage["matic_wulx"] = await UniswapV2Factory.getPair(matic, wulx);
+            await UniswapV2Factory.createPair(wulx, matic);
+            deployed_storage["matic_wulx"] = await UniswapV2Factory.getPair(wulx, matic);
 
-            await UniswapV2Factory.createPair(ftm, wulx);
-            deployed_storage["ftm_wulx"] = await UniswapV2Factory.getPair(ftm, wulx);
+            await UniswapV2Factory.createPair(wulx, ftm);
+            deployed_storage["ftm_wulx"] = await UniswapV2Factory.getPair(wulx, ftm);
 
             await UniswapV2Factory.createPair(weth, wulx);
             deployed_storage["weth_wulx"] = await UniswapV2Factory.getPair(weth, wulx);
 
-            await UniswapV2Factory.createPair(wbtc, wulx);
-            deployed_storage["wbtc_wulx"] = await UniswapV2Factory.getPair(wbtc, wulx);
+            await UniswapV2Factory.createPair(wulx, wbtc);
+            deployed_storage["wbtc_wulx"] = await UniswapV2Factory.getPair(wulx, wbtc);
             
-            await UniswapV2Factory.createPair(avax, wulx);
-            deployed_storage["avax_wulx"] = await UniswapV2Factory.getPair(avax, wulx);
+            await UniswapV2Factory.createPair(wulx, avax);
+            deployed_storage["avax_wulx"] = await UniswapV2Factory.getPair(wulx, avax);
 
-            await UniswapV2Factory.createPair(usdt, usdc);
-            deployed_storage["usdt_usdc"] = await UniswapV2Factory.getPair(usdt, usdc);
+            await UniswapV2Factory.createPair(usdc, usdt);
+            deployed_storage["usdt_usdc"] = await UniswapV2Factory.getPair(usdc, usdt);
             fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
 
