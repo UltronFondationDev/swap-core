@@ -22,7 +22,7 @@ task("deploy", "Deploy")
 
       let weth;
       if(network.name === 'ganache_ultron') {
-            weth = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
+            weth = JSON.parse(fs.readFileSync(filename).toString().trim())["tokens"]["wulx"];
       }
       // else if(network.name === 'goerli') {
       //       weth = '0x85868DeCD7BADCC18F238B8D68098e013e0b36bf';
@@ -44,10 +44,11 @@ task("deploy", "Deploy")
 
       console.log("=".repeat(50));
 
-
-      deployed_storage["UniswapV2Factory"] = uniswapV2Factory;
+      let functional_contracts: any = {};
+      functional_contracts["UniswapV2Factory"] = uniswapV2Factory;
       deployed_storage["UniswapDAO"] = dao;
-      deployed_storage["UniswapV2Router02"] = uniswapV2Router;
+      functional_contracts["UniswapV2Router02"] = uniswapV2Router;
+      deployed_storage["functional_contracts"] = functional_contracts;
       fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       Helpers.logDeploy('UniswapV2Factory',uniswapV2Factory);
       Helpers.logDeploy('UniswapDAO',dao);
@@ -186,42 +187,43 @@ task("create-pair", "New pair address")
             const factoryAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Factory"];
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
 
-            const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];
-            const weth  = JSON.parse(fs.readFileSync(filename).toString().trim())["wETH"];
-            const bnb   = JSON.parse(fs.readFileSync(filename).toString().trim())["bnb"];
-            const avax  = JSON.parse(fs.readFileSync(filename).toString().trim())["avax"];
-            const matic = JSON.parse(fs.readFileSync(filename).toString().trim())["matic"];
-            const ftm   = JSON.parse(fs.readFileSync(filename).toString().trim())["ftm"];
-            const usdt  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDT"];
-            const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())["uUSDC"];
-            const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())["wulx"];
-
+            const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["wBTC"];
+            const weth  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["wETH"];
+            const bnb   = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["BNB"];
+            const avax  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["AVAX"];
+            const matic = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["MATIC"];
+            const ftm   = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["FTM"];
+            const usdt  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["uUSDT"];
+            const usdc  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["uUSDC"];
+            const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["wULX"];
+            let farm_pools: any = {};
             await UniswapV2Factory.createPair(wulx, usdt)
-            deployed_storage["usdt_wulx"] = await UniswapV2Factory.getPair(wulx, usdt);
+            farm_pools["uUSDT_ULX"] = await UniswapV2Factory.getPair(wulx, usdt);
 
             await UniswapV2Factory.createPair(wulx, usdc);
-            deployed_storage["usdc_wulx"] = await UniswapV2Factory.getPair(wulx, usdc);
+            farm_pools["uUSDC_ULX"] = await UniswapV2Factory.getPair(wulx, usdc);
 
             await UniswapV2Factory.createPair(bnb, wulx);
-            deployed_storage["bnb_wulx"] = await UniswapV2Factory.getPair(bnb, wulx);
+            farm_pools["BNB_ULX"] = await UniswapV2Factory.getPair(bnb, wulx);
 
             await UniswapV2Factory.createPair(wulx, matic);
-            deployed_storage["matic_wulx"] = await UniswapV2Factory.getPair(wulx, matic);
+            farm_pools["MATIC_ULX"] = await UniswapV2Factory.getPair(wulx, matic);
 
             await UniswapV2Factory.createPair(wulx, ftm);
-            deployed_storage["ftm_wulx"] = await UniswapV2Factory.getPair(wulx, ftm);
+            farm_pools["FTM_ULX"] = await UniswapV2Factory.getPair(wulx, ftm);
 
             await UniswapV2Factory.createPair(weth, wulx);
-            deployed_storage["weth_wulx"] = await UniswapV2Factory.getPair(weth, wulx);
+            farm_pools["wETH_ULX"] = await UniswapV2Factory.getPair(weth, wulx);
 
             await UniswapV2Factory.createPair(wulx, wbtc);
-            deployed_storage["wbtc_wulx"] = await UniswapV2Factory.getPair(wulx, wbtc);
+            farm_pools["wBTC_ULX"] = await UniswapV2Factory.getPair(wulx, wbtc);
             
             await UniswapV2Factory.createPair(wulx, avax);
-            deployed_storage["avax_wulx"] = await UniswapV2Factory.getPair(wulx, avax);
+            farm_pools["AVAX_ULX"] = await UniswapV2Factory.getPair(wulx, avax);
 
             await UniswapV2Factory.createPair(usdc, usdt);
-            deployed_storage["usdt_usdc"] = await UniswapV2Factory.getPair(usdc, usdt);
+            farm_pools["uUSDT_uUSDC"] = await UniswapV2Factory.getPair(usdc, usdt);
+            deployed_storage["farm_pools"] = farm_pools
             fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
 
