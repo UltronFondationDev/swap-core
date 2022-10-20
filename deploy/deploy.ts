@@ -22,7 +22,7 @@ task("deploy", "Deploy")
 
       let weth;
       if(network.name === 'ganache_ultron') {
-            weth = JSON.parse(fs.readFileSync(filename).toString().trim())["tokens"]["wulx"];
+            weth = JSON.parse(fs.readFileSync(filename).toString().trim())["tokens"]["wULX"];
       }
       // else if(network.name === 'goerli') {
       //       weth = '0x85868DeCD7BADCC18F238B8D68098e013e0b36bf';
