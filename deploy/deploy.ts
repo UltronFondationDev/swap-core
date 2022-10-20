@@ -184,7 +184,7 @@ task("create-pair", "New pair address")
       .setAction(async (_, { ethers }) => {
             const signer = (await ethers.getSigners())[0];
 
-            const factoryAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Factory"];
+            const factoryAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["functional_contracts"]["UniswapV2Factory"];
             const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
 
             const wbtc  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["wBTC"];
@@ -231,7 +231,7 @@ task("create-pair", "New pair address")
 task("add-liq", "adding liq for tokens")
       .setAction(async (_, { ethers }) => {
           const signer = (await ethers.getSigners())[0];
-          const routerAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["UniswapV2Router02"];
+          const routerAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["functional_contracts"]["UniswapV2Router02"];
           const UniswapV2Router = await ethers.getContractAt("UniswapV2Router02", routerAddress, signer);
 
           const wbtcAddress = JSON.parse(fs.readFileSync(filename).toString().trim())["wBTC"];
