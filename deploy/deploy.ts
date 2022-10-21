@@ -205,6 +205,18 @@ task("create-pair", "New pair address")
             farm_pools["uUSDC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, usdc),
                                        "id": 1};
 
+            await UniswapV2Factory.createPair(usdc, usdt);
+            farm_pools["uUSDT_uUSDC"] = {"address": await UniswapV2Factory.getPair(usdc, usdt),
+                                         "id": 2};
+
+            await UniswapV2Factory.createPair(weth, wulx);
+            farm_pools["wETH_ULX"] = {"address": await UniswapV2Factory.getPair(weth, wulx),
+                                      "id": 3};
+
+            await UniswapV2Factory.createPair(wulx, wbtc);
+            farm_pools["wBTC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, wbtc),
+                                      "id": 4};
+
             await UniswapV2Factory.createPair(bnb, wulx);
             farm_pools["BNB_ULX"] = {"address": await UniswapV2Factory.getPair(bnb, wulx),
                                      "id": 5};
@@ -217,21 +229,11 @@ task("create-pair", "New pair address")
             farm_pools["FTM_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, ftm),
                                      "id": 7};
 
-            await UniswapV2Factory.createPair(weth, wulx);
-            farm_pools["wETH_ULX"] = {"address": await UniswapV2Factory.getPair(weth, wulx),
-                                      "id": 3};
-
-            await UniswapV2Factory.createPair(wulx, wbtc);
-            farm_pools["wBTC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, wbtc),
-                                      "id": 4};
-            
             await UniswapV2Factory.createPair(wulx, avax);
             farm_pools["AVAX_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, avax),
                                       "id": 8};
 
-            await UniswapV2Factory.createPair(usdc, usdt);
-            farm_pools["uUSDT_uUSDC"] = {"address": await UniswapV2Factory.getPair(usdc, usdt),
-                                         "id": 2};
+
             deployed_storage["farm_pools"] = farm_pools
             fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
