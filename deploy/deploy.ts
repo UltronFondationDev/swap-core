@@ -198,31 +198,40 @@ task("create-pair", "New pair address")
             const wulx  = JSON.parse(fs.readFileSync(filename).toString().trim())['tokens']["wULX"];
             let farm_pools: any = {};
             await UniswapV2Factory.createPair(wulx, usdt)
-            farm_pools["uUSDT_ULX"] = await UniswapV2Factory.getPair(wulx, usdt);
+            farm_pools["uUSDT_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, usdt),
+                                       "id": 0};
 
             await UniswapV2Factory.createPair(wulx, usdc);
-            farm_pools["uUSDC_ULX"] = await UniswapV2Factory.getPair(wulx, usdc);
+            farm_pools["uUSDC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, usdc),
+                                       "id": 1};
 
             await UniswapV2Factory.createPair(bnb, wulx);
-            farm_pools["BNB_ULX"] = await UniswapV2Factory.getPair(bnb, wulx);
+            farm_pools["BNB_ULX"] = {"address": await UniswapV2Factory.getPair(bnb, wulx),
+                                     "id": 5};
 
             await UniswapV2Factory.createPair(wulx, matic);
-            farm_pools["MATIC_ULX"] = await UniswapV2Factory.getPair(wulx, matic);
+            farm_pools["MATIC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, matic),
+                                       "id": 6};
 
             await UniswapV2Factory.createPair(wulx, ftm);
-            farm_pools["FTM_ULX"] = await UniswapV2Factory.getPair(wulx, ftm);
+            farm_pools["FTM_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, ftm),
+                                     "id": 7};
 
             await UniswapV2Factory.createPair(weth, wulx);
-            farm_pools["wETH_ULX"] = await UniswapV2Factory.getPair(weth, wulx);
+            farm_pools["wETH_ULX"] = {"address": await UniswapV2Factory.getPair(weth, wulx),
+                                      "id": 3};
 
             await UniswapV2Factory.createPair(wulx, wbtc);
-            farm_pools["wBTC_ULX"] = await UniswapV2Factory.getPair(wulx, wbtc);
+            farm_pools["wBTC_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, wbtc),
+                                      "id": 4};
             
             await UniswapV2Factory.createPair(wulx, avax);
-            farm_pools["AVAX_ULX"] = await UniswapV2Factory.getPair(wulx, avax);
+            farm_pools["AVAX_ULX"] = {"address": await UniswapV2Factory.getPair(wulx, avax),
+                                      "id": 8};
 
             await UniswapV2Factory.createPair(usdc, usdt);
-            farm_pools["uUSDT_uUSDC"] = await UniswapV2Factory.getPair(usdc, usdt);
+            farm_pools["uUSDT_uUSDC"] = {"address": await UniswapV2Factory.getPair(usdc, usdt),
+                                         "id": 2};
             deployed_storage["farm_pools"] = farm_pools
             fs.writeFileSync(filename, JSON.stringify(deployed_storage));
       })
