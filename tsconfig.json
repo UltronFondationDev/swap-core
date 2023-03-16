@@ -5,8 +5,8 @@
     "target": "es2018",
     "strict": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
-  "include": ["./deploy", "./hardhat-test"],
-  "files": ["./hardhat.config.ts"],
+  "include": ["./deploy", "./hardhat-test", "./tasks"],
+  "files": ["./hardhat.config.ts"]
 }

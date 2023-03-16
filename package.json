@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "main": "index.js",
   "scripts": {
-    "compile": "truffle compile",
+    "compile": "hardhat compile",
     "test": "npx builder test",
     "coverage": "npx builder coverage",
     "lint": "yarn prettier ./test/*.ts --check",
@@ -14,7 +14,8 @@
     "prepublishOnly": "yarn test",
     "deploy": "truffle migrate",
     "deploy:ftm": "truffle migrate --network fantom",
-    "deploy:ftmtest": "truffle migrate --network fantomtest"
+    "deploy:ftmtest": "truffle migrate --network fantomtest",
+    "verify-code:uniswapv2factory": "hardhat verify-code --network ultron --contract-name UniswapV2Factory --contract-address 0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
