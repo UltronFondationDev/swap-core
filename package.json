@@ -15,7 +15,8 @@
     "deploy": "truffle migrate",
     "deploy:ftm": "truffle migrate --network fantom",
     "deploy:ftmtest": "truffle migrate --network fantomtest",
-    "verify-code:uniswapv2factory": "hardhat verify-code --network ultron --contract-name UniswapV2Factory --contract-address 0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7"
+    "verify-code:uniswapv2-factory": "hardhat verify-code --network ultron --contract-name UniswapV2Factory --contract-address 0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7",
+    "verify-code:daotreasury": "hardhat verify-code --network ultron --contract-name UniswapDAO --contract-address 0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5 --folder dao"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",

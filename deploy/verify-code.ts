@@ -5,7 +5,8 @@ import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names'
 task('verify-code', 'Compare code for UniswapV2Factory contract')
   .addParam<string>('contractName', 'Contract name', undefined, types.string)
   .addParam<string>('contractAddress', 'Contract address', undefined, types.string)
-  .setAction(async ({ contractAddress, contractName }, { ethers, run, network, config }) => {
+  .addOptionalParam<string>('folder', 'Folder', undefined, types.string)
+  .setAction(async ({ contractAddress, contractName, folder }, { ethers, run, network, config }) => {
     await run(TASK_COMPILE)
 
     const { compilers } = config.solidity
@@ -19,16 +20,22 @@ task('verify-code', 'Compare code for UniswapV2Factory contract')
 
     console.log(`Network: ${network.name}`)
     console.log(`Solidity compiler version: ${version}`)
-    console.log(`Solidity compiler optimizater enabled: ${optimizer.enabled}`)
-    console.log(`Solidity compiler optimizater runs: ${optimizer.runs}`)
+    console.log(`Solidity compiler optimizer enabled: ${optimizer.enabled}`)
+    console.log(`Solidity compiler optimizer runs: ${optimizer.runs}`)
     console.log(`Contract name: ${contractName}`)
     console.log(`Contract address: ${contractAddress}`)
 
-    const artifact = await fs.readFile(`./artifacts/contracts/${contractName}.sol/${contractName}.json`)
+    const artifact = await fs.readFile(
+      `./artifacts/contracts/${folder ? `${folder}/` : '/'}${contractName}.sol/${contractName}.json`
+    )
     const { deployedBytecode: buildCode } = JSON.parse(artifact.toString())
 
     const chainCode = await ethers.provider.getCode(contractAddress)
-    console.log(`Build code matches chain code: ${buildCode === chainCode}`)
+    if (buildCode.length != chainCode.length) {
+      throw new Error(`Build code size doesn't match chain code size`)
+    }
+
+    console.log(`Build code matches chain code by ${calculateSimilarityRatio(buildCode, chainCode, 4)}%`)
 
     await fs.rm('./build', { recursive: true, force: true })
     await fs.mkdir('./build')
@@ -39,5 +46,17 @@ task('verify-code', 'Compare code for UniswapV2Factory contract')
 
     const chainCodeFilePath = `./build/chain-code-${contractName}.txt`
     await fs.writeFile(`./build/chain-code-${contractAddress}.txt`, chainCode)
-    console.log(`Chain code saved to ${buildCodeFilePath}`)
+    console.log(`Chain code saved to ${chainCodeFilePath}`)
   })
+
+function calculateSimilarityRatio(buildCode: string, chainCode: string, digits: number): string {
+  let matchCount = 0
+  for (let i = 0; i < buildCode.length; i++) {
+    if (buildCode[i] == chainCode[i]) {
+      matchCount++
+    }
+  }
+
+  const similarityRatio = (matchCount / buildCode.length) * 100
+  return similarityRatio.toFixed(digits)
+}
