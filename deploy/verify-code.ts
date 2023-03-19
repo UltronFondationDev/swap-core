@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises'
+import { HttpNetworkUserConfig } from 'hardhat/types'
 import { task, types } from 'hardhat/config'
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names'
-import { HttpNetworkUserConfig, NetworkConfig } from 'hardhat/types'
 
-task('verify-code', 'Compare code for UniswapV2Factory contract')
+task('verify-code', 'Compare code of a contract')
   .addParam<string>('contractName', 'Contract name', undefined, types.string)
   .addParam<string>('contractAddress', 'Contract address', undefined, types.string)
   .addOptionalParam<string>('folder', 'Contract folder', undefined, types.string)
@@ -40,7 +40,7 @@ task('verify-code', 'Compare code for UniswapV2Factory contract')
 
     const chainCode = await ethers.provider.getCode(contractAddress)
     if (buildCode.length != chainCode.length) {
-      throw new Error(`Build code size doesn't match chain code size`)
+      throw new Error(`Build code size doesn't match chain code size: ${buildCode.length} != ${chainCode.length}`)
     }
 
     console.log(`\nBuild code matches chain code by ${calculateSimilarityRatio(buildCode, chainCode, 4)}%`)

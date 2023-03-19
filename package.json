@@ -16,6 +16,8 @@
     "deploy:ftm": "truffle migrate --network fantom",
     "deploy:ftmtest": "truffle migrate --network fantomtest",
     "verify-code:uniswap-v2-factory": "hardhat verify-code --network ultron --contract-name UniswapV2Factory --contract-address 0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7",
+    "verify-code:uniswap-v2-router02": "hardhat verify-code --network ultron --contract-name UniswapV2Router02 --contract-address 0x2149Ca7a3e4098d6C4390444769DA671b4dC3001",
+    "verify-code:uniswap-dao": "hardhat verify-code --network ultron --contract-name UniswapDAO --contract-address 0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5 --folder dao",
     "verify-code:uniswap-v2-pair:uusdt-wulx": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0x938ba76720683bE80C1d3dEFfa27b9153E48c5e9 --lp-pair uUSDT-wULX",
     "verify-code:uniswap-v2-pair:uusdc-wulx": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0x6858B9099a4C7Ac4E7Ec1dF7F637169C598069f3 --lp-pair uUSDC-wULX",
     "verify-code:uniswap-v2-pair:bnb-wulx": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0xf660c223f4255bc31bd0e8158d1722d5E9bF13B9 --lp-pair BNB-wULX",
@@ -27,9 +29,7 @@
     "verify-code:uniswap-v2-pair:uusdt-uusdc": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0x5910306486d3adF0f2ec3146A8C38e6C1F3404b7 --lp-pair uUSDT-uUSDC",
     "verify-code:uniswap-v2-pair:dai-wulx": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0xcB35F9e237f3283B61939f3e1773d04463B805fb --lp-pair DAI-wULX",
     "verify-code:uniswap-v2-pair:busd-wulx": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0x6EF9AAD39d2326f217e6C7265876813a502A09f8 --lp-pair BUSD-wULX",
-    "verify-code:uniswap-v2-pair:weth-uusdt": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0xD15935fB6C77AEc56Fd996108933A1C84529E7d9 --lp-pair wETH-uUSDT",
-    "verify-code:uniswap-v2-router02": "hardhat verify-code --network ultron --contract-name UniswapV2Router02 --contract-address 0x2149Ca7a3e4098d6C4390444769DA671b4dC3001",
-    "verify-code:uniswap-dao": "hardhat verify-code --network ultron --contract-name UniswapDAO --contract-address 0xa196e8E3F8dfBCe1a0BA03eEeE7CE717A584eFF5 --folder dao"
+    "verify-code:uniswap-v2-pair:weth-uusdt": "hardhat verify-code --network ultron --contract-name UniswapV2Pair --contract-address 0xD15935fB6C77AEc56Fd996108933A1C84529E7d9 --lp-pair wETH-uUSDT"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
