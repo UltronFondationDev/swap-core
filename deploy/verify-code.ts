@@ -3,22 +3,16 @@ import { HttpNetworkUserConfig } from 'hardhat/types'
 import { task, types } from 'hardhat/config'
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names'
 
-task('verify-code', 'Compare code of a contract')
+task('verify-code', 'Verify code of a contract')
   .addParam<string>('contractName', 'Contract name', undefined, types.string)
   .addParam<string>('contractAddress', 'Contract address', undefined, types.string)
   .addOptionalParam<string>('folder', 'Contract folder', undefined, types.string)
   .addOptionalParam<string>('lpPair', 'Liquidity pool pair', undefined, types.string)
-  .setAction(async ({ contractAddress, contractName, folder, lpPair }, { ethers, run, network, config }) => {
-    await run(TASK_COMPILE)
-
-    const { compilers } = config.solidity
-    if (!compilers.length) {
-      throw new Error('No compiler configuration found')
-    }
-    const {
-      version,
-      settings: { optimizer },
-    } = compilers[0]
+  .setAction(async ({ contractAddress, contractName, folder, lpPair }, { ethers, run, network }) => {
+    await run(TASK_COMPILE, {
+      force: true,
+      noTypechain: true,
+    })
 
     const networkConfig = network.config as HttpNetworkUserConfig
     console.log(`Network: ${network.name}`)
@@ -29,9 +23,6 @@ task('verify-code', 'Compare code of a contract')
     if (lpPair) {
       console.log(`Liquidity pool pair: ${lpPair}`)
     }
-    console.log(`\nSolidity compiler version: ${version}`)
-    console.log(`Solidity compiler optimizer enabled: ${optimizer.enabled}`)
-    console.log(`Solidity compiler optimizer runs: ${optimizer.runs}`)
 
     const artifact = await fs.readFile(
       `./artifacts/contracts/${folder ? `${folder}/` : '/'}${contractName}.sol/${contractName}.json`
