@@ -28,51 +28,57 @@ npm run compile
 npm test
 ```
 
-## Verify Contract Code
+## Verify Bytecode
+
+The compiled bytecode is stored in the `./bytecode` directory. To compile it manually, you should
+run the corresponding task below for a checked contract. The task will fetch a contract's bytecode
+from the respective address in the Ultron mainnet and will compile its source code into bytecode
+locally. Both remote and local bytecode is saved into the `./build` directory with the respective
+filename.
 
 ```
-# UniswapV2Factory
-npm run verify-code:uniswap-v2-factory
+# UniswapV2Factory Contract
+npm run verify-bytecode:uniswap-v2-factory
 
-# UniswapV2Router02
-npm run verify-code:uniswap-v2-router02
+# UniswapV2Router02 Contract
+npm run verify-bytecode:uniswap-v2-router02
 
-# UniswapV2DAO
-npm run verify-code:uniswap-dao
+# UniswapV2DAO Contract
+npm run verify-bytecode:uniswap-dao
 
-# UniswapV2Pair (uUSDT-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:uusdt-wulx
+# UniswapV2Pair Contract (uUSDT-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:uusdt-wulx
 
-# UniswapV2Pair (uUSDC-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:uusdc-wulx
+# UniswapV2Pair Contract (uUSDC-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:uusdc-wulx
 
-# UniswapV2Pair (BNB-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:bnb-wulx
+# UniswapV2Pair Contract (BNB-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:bnb-wulx
 
-# UniswapV2Pair (MATIC-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:matic-wulx
+# UniswapV2Pair Contract (MATIC-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:matic-wulx
 
-# UniswapV2Pair (FTM-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:ftm-wulx
+# UniswapV2Pair Contract (FTM-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:ftm-wulx
 
-# UniswapV2Pair (wETH-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:weth-wulx
+# UniswapV2Pair Contract (wETH-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:weth-wulx
 
-# UniswapV2Pair (wBTC-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:wbtc-wulx
+# UniswapV2Pair Contract (wBTC-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:wbtc-wulx
 
-# UniswapV2Pair (AVAX-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:avax-wulx
+# UniswapV2Pair Contract (AVAX-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:avax-wulx
 
-# UniswapV2Pair (uUSDT-uUSDC Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:uusdt-uusdc
+# UniswapV2Pair Contract (uUSDT-uUSDC Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:uusdt-uusdc
 
-# UniswapV2Pair (DAI-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:dai-wulx
+# UniswapV2Pair Contract (DAI-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:dai-wulx
 
-# UniswapV2Pair (BUSD-wULX Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:busd-wulx
+# UniswapV2Pair Contract (BUSD-wULX Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:busd-wulx
 
-# UniswapV2Pair (wETH-uUSDT Liquidity Pool)
-npm run verify-code:uniswap-v2-pair:weth-uusdt
+# UniswapV2Pair Contract (wETH-uUSDT Liquidity Pool)
+npm run verify-bytecode:uniswap-v2-pair:weth-uusdt
 ```
