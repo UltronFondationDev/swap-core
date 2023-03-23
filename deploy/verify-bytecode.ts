@@ -47,11 +47,11 @@ task('verify-bytecode', "Verify contract's bytecode")
     await fs.rm('./build', { recursive: true, force: true })
     await fs.mkdir('./build')
 
-    const localBytecodeFilePath = `./build/${contractName}-${lpPair}-local.bin-runtime`
+    const localBytecodeFilePath = `./build/${contractName}-${lpPair ? `${lpPair}-` : ''}local.bin-runtime`
     await fs.writeFile(localBytecodeFilePath, localBytecode)
     console.log(`Local bytecode saved to ${localBytecodeFilePath}`)
 
-    const remoteBytecodeFilePath = `./build/${contractName}-${lpPair}-remote.bin-runtime`
+    const remoteBytecodeFilePath = `./build/${contractName}-${lpPair ? `${lpPair}-` : ''}remote.bin-runtime`
     await fs.writeFile(remoteBytecodeFilePath, remoteBytecode)
     console.log(`Remote bytecode saved to ${remoteBytecodeFilePath}`)
   })
