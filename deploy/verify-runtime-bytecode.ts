@@ -3,7 +3,7 @@ import { HttpNetworkUserConfig } from 'hardhat/types'
 import { task, types } from 'hardhat/config'
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names'
 
-task('verify-bytecode', "Verify contract's bytecode")
+task('verify-runtime-bytecode', 'Verify contract runtime bytecode')
   .addParam<string>('contractName', 'Contract name', undefined, types.string)
   .addParam<string>('contractAddress', 'Contract address', undefined, types.string)
   .addOptionalParam<string>('mode', 'Verification mode: partial or full', 'partial', types.string)

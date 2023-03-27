@@ -8,7 +8,8 @@ import '@nomiclabs/hardhat-waffle'
 import '@nomiclabs/hardhat-ethers'
 
 import './deploy/deploy'
-import './deploy/verify-bytecode'
+import './deploy/verify-creation-bytecode'
+import './deploy/verify-runtime-bytecode'
 
 dotenv.config()
 
