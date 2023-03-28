@@ -25,11 +25,7 @@ task('verify-runtime-bytecode', 'Verify contract runtime bytecode')
       console.log(`Liquidity pool pair: ${lpPair}`)
     }
 
-    const artifact = await fs.readFile(
-      `./artifacts/contracts/${folder ? `${folder}/` : '/'}${contractName}.sol/${contractName}.json`
-    )
-    const { deployedBytecode: localBytecode } = JSON.parse(artifact.toString())
-
+    const localBytecode = await getLocalBytecode(contractName, folder)
     const remoteBytecode = await ethers.provider.getCode(contractAddress)
     if (localBytecode.length != remoteBytecode.length) {
       throw new Error(
@@ -56,10 +52,17 @@ task('verify-runtime-bytecode', 'Verify contract runtime bytecode')
     console.log(`Remote bytecode saved to ${remoteBytecodeFilePath}`)
   })
 
-const METADATA_SIZE = 106
+async function getLocalBytecode(contractName: string, folder: string) {
+  const artifact = await fs.readFile(
+    `./artifacts/contracts/${folder ? `${folder}/` : '/'}${contractName}.sol/${contractName}.json`
+  )
+  const { deployedBytecode } = JSON.parse(artifact.toString())
+  return deployedBytecode
+}
 
 function adjustCheckedBytecode(bytecode: string, mode: 'partial' | 'full') {
-  return mode === 'full' ? bytecode : bytecode.slice(0, -METADATA_SIZE)
+  const metdataSize = 106
+  return mode === 'full' ? bytecode : bytecode.slice(0, -metdataSize)
 }
 
 function calculateSimilarityRatio(localBytecode: string, remoteBytecode: string, digits = 4): string {

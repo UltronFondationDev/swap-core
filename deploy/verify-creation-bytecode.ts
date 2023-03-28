@@ -32,8 +32,8 @@ task('verify-creation-bytecode', 'Verify contract creation bytecode')
         console.log(`Liquidity pool pair: ${lpPair}`)
       }
 
-      const remoteBytecode = await getRemoteBytecode(ethers, contractAddress, transactionHash)
       const localBytecode = await getLocalBytecode(ethers, contractName, constructorArguments, folder)
+      const remoteBytecode = await getRemoteBytecode(ethers, contractAddress, transactionHash)
       if (localBytecode.length !== remoteBytecode.length) {
         throw new Error(
           `Local bytecode size doesn't match remote bytecode size: ${localBytecode.length} != ${remoteBytecode.length}`

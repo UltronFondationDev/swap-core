@@ -28,13 +28,9 @@ npm run compile
 npm test
 ```
 
-## Verify Bytecode
+## Verify Contract Bytecode
 
-The compiled bytecode is stored in the `./bytecode` directory. To compile it manually, you should
-run the corresponding task below for a checked contract. The task will fetch a contract's bytecode
-from the respective address in the Ultron mainnet and will compile its source code into bytecode
-locally. Both remote and local bytecode is saved into the `./build` directory with the respective
-filename.
+The already compiled bytecode is stored in the `./bytecode` directory. To verify it, you should run the an NPM script below. Both remote and local bytecode is saved into the `./build` directory with the respective filename.
 
 ```
 # UniswapV2Factory Contract
