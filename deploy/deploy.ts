@@ -198,6 +198,33 @@ task("create-pair", "New pair address")
             console.info(await UniswapV2Factory.getPair(token0, token1));
       })
 
+task("all-pairs", "All pairs")
+      .setAction(async (_, { ethers }) => {
+            const signer = (await ethers.getSigners())[0];
+
+            const factoryAddress = "0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7";
+            const UniswapV2Factory = await ethers.getContractAt("UniswapV2Factory", factoryAddress, signer);
+
+            const len = await UniswapV2Factory.allPairsLength();
+            for(let i = 0; i < len; i++) {
+                  const pairAddress = await UniswapV2Factory.allPairs(i);
+                  const pair = await ethers.getContractAt("UniswapV2Pair", pairAddress, signer);
+                  const token0Address = await pair.token0();
+                  const token1Address = await pair.token1();
+                  if(token0Address.toLowerCase() !== '0x9d40F4A04C737887a79902Caa7cE8003197D8B1C'.toLowerCase()
+                        && token1Address.toLowerCase() !== '0x9d40F4A04C737887a79902Caa7cE8003197D8B1C'.toLowerCase())
+                  {
+                        const token0 = await ethers.getContractAt("ERC20Custom", token0Address, signer);
+                        const token1 = await ethers.getContractAt("ERC20Custom", token1Address, signer);
+                        const token0Name = await token0.symbol()
+                        const token1Name = await token1.symbol()
+                        console.log(`${token0Name} - ${token1Name} = ${pairAddress}`)
+                  } else {
+                        console.log(`${token0Address} - ${token1Address} = ${pairAddress}`)
+                  }
+            }
+})
+
 task("add-voter", "Adds voter")      
     .setAction(async (_, { ethers, network }) => {
         const signer = (await ethers.getSigners())[0];
